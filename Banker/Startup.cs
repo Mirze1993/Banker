@@ -28,6 +28,8 @@ namespace Banker
             }
 
             app.UseStatusCodePagesWithRedirects("/Error?statusCode={0}");
+
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>

@@ -8,9 +8,19 @@ namespace Banker.Controllers
 {
     public class HomeController : Controller
     {
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
         public IActionResult Index()
         {
-            return Unauthorized();
+            return View();
         }
     }
 }

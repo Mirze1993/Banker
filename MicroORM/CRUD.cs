@@ -6,7 +6,7 @@ using System.Data.Common;
 
 namespace MicroORM
 {
-    public abstract class CRUD<T> : ICRUD<T> where T : class, IEntity, new()
+    public abstract class CRUD<T> : ICRUD<T> where T : class, new()
     {
         IQuery<T> query;
 

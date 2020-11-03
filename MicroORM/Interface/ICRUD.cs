@@ -3,7 +3,7 @@
 
 namespace MicroORM.Interface
 {
-    public interface ICRUD<T>  where T : class, IEntity, new()
+    public interface ICRUD<T>  where T : class, new()
     {
         List<T> GetByColumName(string columName, object value);
         int Insert(T t);
