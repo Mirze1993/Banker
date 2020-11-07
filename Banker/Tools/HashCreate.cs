@@ -58,7 +58,7 @@ namespace Banker.Tools
             var oldHashPas = Convert.FromBase64String(hasPassword);
             var saltOld = new byte[saltSize];
             Buffer.BlockCopy(oldHashPas, 0, saltOld, 0, saltSize);
-            var newHash=CreateHash(stringPassword, salt);
+            var newHash=CreateHash(stringPassword, saltOld);
             for (int i = 0; i < newHash.Length; i++)
                 if (newHash[i] != oldHashPas[saltSize + i]) return false;
             return true;            

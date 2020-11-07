@@ -1,8 +1,9 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Text;
+
 
 namespace MicroORM
 {
@@ -15,6 +16,8 @@ namespace MicroORM
 
         protected string connectionString;
 
+        
+
         public abstract List<DbParameter> SetParametrs<T>(T t);
 
 
@@ -23,6 +26,7 @@ namespace MicroORM
 
         protected void ConnectionOpen()
         {
+            
             if (connection.State != ConnectionState.Open) connection.Open();
         }
 
@@ -36,8 +40,8 @@ namespace MicroORM
         public void TransactionCommit()
         {
             if (transaction == null) return;
-            transaction.Commit();
-            transaction.Dispose();
+            transaction?.Commit();
+            transaction?.Dispose();
         }
 
 
@@ -63,6 +67,7 @@ namespace MicroORM
 
         protected void CommandStart(string commandText, List<DbParameter> parameters = null)
         {
+            
             command = connection.CreateCommand();
             command.CommandText = commandText;
             if (parameters != null) command.Parameters.AddRange(parameters.ToArray());
@@ -79,6 +84,7 @@ namespace MicroORM
         //nonquery
         public bool NonQuery(string commandText, List<DbParameter> Parameters = null)
         {
+          
             CommandStart(commandText, Parameters);
             ConnectionOpen();
             bool b = false;
@@ -92,6 +98,7 @@ namespace MicroORM
 
         public bool NonQuery(CommandType commandType, string commandText, List<DbParameter> Parameters = null)
         {
+           
             CommandStart(commandType, commandText, Parameters);
             ConnectionOpen();
             bool b = false;
@@ -108,6 +115,7 @@ namespace MicroORM
         //Scaller
         public object Scaller(string commandText, List<DbParameter> parameters = null)
         {
+          
             CommandStart(commandText, parameters);
             ConnectionOpen();
             object b = null;
@@ -121,6 +129,7 @@ namespace MicroORM
 
         public object Scaller(string commandText, CommandType type, List<DbParameter> parameters = null)
         {
+          
             CommandStart(type, commandText, parameters);
             ConnectionOpen();
             object b = null;
@@ -137,6 +146,7 @@ namespace MicroORM
         //reader
         public T Reader<T>(Func<DbDataReader, T> readMetod, string commandText, List<DbParameter> parameters = null)
         {
+           
             CommandStart(commandText, parameters);
             ConnectionOpen();
             try
@@ -198,8 +208,8 @@ namespace MicroORM
         {
             if (reader != null)
                 if (!reader.IsClosed) reader.Close();
-            if (command != null) command.Dispose();
-            if (transaction != null) transaction.Dispose();
+            command?.Dispose();
+            transaction?.Dispose();
             if (connection == null) return;
             if (connection.State != ConnectionState.Closed) connection.Close();
             connection.Dispose();

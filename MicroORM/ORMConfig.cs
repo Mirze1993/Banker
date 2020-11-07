@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,6 +10,8 @@ namespace MicroORM
         public static string ConnectionString="";
 
         public static DbType DbType;
+
+        
     }
 
     public enum DbType
