@@ -92,13 +92,14 @@ namespace Banker.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
             return RedirectToAction("Login");
         }
 
-        [Authorize]
+        
         public IActionResult Index()
         {
             return View();

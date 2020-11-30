@@ -35,7 +35,7 @@ namespace Banker
                 option.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             }).AddCookie(option=> {
                 option.LoginPath = "/Home/Login";
-                option.LogoutPath = "/Home/Login";
+                option.LogoutPath = "/Home/Index";
                 option.Cookie.Name = "Banker";
             });
 

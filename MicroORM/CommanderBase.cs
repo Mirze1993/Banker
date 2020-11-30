@@ -1,4 +1,5 @@
 ﻿
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,7 +17,7 @@ namespace MicroORM
 
         protected string connectionString;
 
-        
+
 
         public abstract List<DbParameter> SetParametrs<T>(T t);
 
@@ -26,7 +27,6 @@ namespace MicroORM
 
         protected void ConnectionOpen()
         {
-            
             if (connection.State != ConnectionState.Open) connection.Open();
         }
 
@@ -53,6 +53,7 @@ namespace MicroORM
             if (b) return;
             transaction.Rollback();
             transaction.Dispose();
+            LogManager.GetLogger(GetType().Name).Error("Transaction   roleback");
         }
         public void TransactionComand(CommandType type, string commandText, List<DbParameter> parameters)
         {
@@ -62,21 +63,22 @@ namespace MicroORM
             if (b) return;
             transaction.Rollback();
             transaction.Dispose();
+            LogManager.GetLogger(GetType().Name).Error("Transaction   roleback");
         }
 
 
         protected void CommandStart(string commandText, List<DbParameter> parameters = null)
         {
-            
+
             command = connection.CreateCommand();
             command.CommandText = commandText;
             if (parameters != null) command.Parameters.AddRange(parameters.ToArray());
         }
 
-        protected void CommandStart(CommandType commandType, string commandName, List<DbParameter> parameters = null)
+        protected void CommandStart(CommandType commandType, string commandText, List<DbParameter> parameters = null)
         {
-            CommandStart(commandName, parameters);
-            command.CommandType = CommandType.StoredProcedure;
+            CommandStart(commandText, parameters);
+            command.CommandType = commandType;
         }
 
 
@@ -84,7 +86,7 @@ namespace MicroORM
         //nonquery
         public bool NonQuery(string commandText, List<DbParameter> Parameters = null)
         {
-          
+
             CommandStart(commandText, Parameters);
             ConnectionOpen();
             bool b = false;
@@ -92,13 +94,16 @@ namespace MicroORM
             {
                 b = command.ExecuteNonQuery() > 0;
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                LogManager.GetLogger(GetType().Name).Error(e.Message);
+            }
             return b;
         }
 
         public bool NonQuery(CommandType commandType, string commandText, List<DbParameter> Parameters = null)
         {
-           
+
             CommandStart(commandType, commandText, Parameters);
             ConnectionOpen();
             bool b = false;
@@ -106,7 +111,10 @@ namespace MicroORM
             {
                 b = command.ExecuteNonQuery() > 0;
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                LogManager.GetLogger(GetType().Name).Error(e.Message);
+            }
             return b;
         }
 
@@ -115,7 +123,7 @@ namespace MicroORM
         //Scaller
         public object Scaller(string commandText, List<DbParameter> parameters = null)
         {
-          
+
             CommandStart(commandText, parameters);
             ConnectionOpen();
             object b = null;
@@ -123,13 +131,16 @@ namespace MicroORM
             {
                 b = command.ExecuteScalar();
             }
-            catch (Exception e) { }
+            catch (Exception e)
+            {
+                LogManager.GetLogger(GetType().Name).Error(e.Message);
+            }
             return b;
         }
 
         public object Scaller(string commandText, CommandType type, List<DbParameter> parameters = null)
         {
-          
+
             CommandStart(type, commandText, parameters);
             ConnectionOpen();
             object b = null;
@@ -137,7 +148,10 @@ namespace MicroORM
             {
                 b = command.ExecuteScalar();
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                LogManager.GetLogger(GetType().Name).Error(e.Message);
+            }
             return b;
         }
 
@@ -146,14 +160,18 @@ namespace MicroORM
         //reader
         public T Reader<T>(Func<DbDataReader, T> readMetod, string commandText, List<DbParameter> parameters = null)
         {
-           
+
             CommandStart(commandText, parameters);
             ConnectionOpen();
             try
             {
                 reader = command.ExecuteReader();
             }
-            catch (Exception e) { return default(T); }
+            catch (Exception e)
+            {
+                LogManager.GetLogger(GetType().Name).Error(e.Message);
+                return default(T);
+            }
             var r = readMetod(reader);
             return r;
         }
@@ -166,7 +184,10 @@ namespace MicroORM
             {
                 reader = command.ExecuteReader();
             }
-            catch (Exception) { return default(T); }
+            catch (Exception e)
+            {
+                LogManager.GetLogger(GetType().Name).Error(e.Message); return default(T);
+            }
             var r = readMetod(reader);
             return r;
         }
@@ -177,9 +198,19 @@ namespace MicroORM
             return Reader(GetList<T>, commandText, parameters);
         }
 
+        public T ReaderFist<T>(string commandText, List<DbParameter> parameters = null) where T : class, new()
+        {
+            return Reader(GetFist<T>, commandText, parameters);
+        }
+
         public List<T> Reader<T>(string commandText, CommandType type, List<DbParameter> parameters = null) where T : class, new()
         {
             return Reader(GetList<T>, commandText, type, parameters);
+        }
+
+        public T ReaderFist<T>(string commandText, CommandType type, List<DbParameter> parameters = null) where T : class, new()
+        {
+            return Reader(GetFist<T>, commandText, type, parameters);
         }
 
         protected List<T> GetList<T>(DbDataReader r) where T : class, new()
@@ -203,6 +234,28 @@ namespace MicroORM
             }
             return list;
         }
+
+        protected T GetFist<T>(DbDataReader r) where T : class, new()
+        {
+            if (r == null) return null;
+            if (!r.HasRows) return null;
+            T t = new T();
+            while (r.Read())
+            {
+                foreach (var item in typeof(T).GetProperties())
+                {
+                    try
+                    {
+                        var value = r[item.Name];
+                        item.SetValue(t, value);
+                    }
+                    catch { }
+                }
+                break;
+            }
+            return t;
+        }
+
 
         public void Dispose()
         {

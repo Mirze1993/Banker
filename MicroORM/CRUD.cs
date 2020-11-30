@@ -32,15 +32,23 @@ namespace MicroORM
         public virtual bool Delet(int id)
         {
             string cmtext = query.Delete(id.ToString());
-            using (CommanderBase commander = DBContext.CreateCommander())
-                return commander.NonQuery(cmtext);
+            using CommanderBase commander = DBContext.CreateCommander();
+            return commander.NonQuery(cmtext);
         }
 
-        public virtual List<T> GetByColumName(string columName,object value)
+        public virtual List<T> GetByColumName(string columName, object value)
         {
             string cmtext = query.GetByColumName(columName);
             using (CommanderBase commander = DBContext.CreateCommander())
-                return commander.Reader<T>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value)});
+                return commander.Reader<T>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value) });
+
+        }
+
+        public virtual T GetByColumNameFist(string columName, object value)
+        {
+            string cmtext = query.GetByColumName(columName);
+            using (CommanderBase commander = DBContext.CreateCommander())
+                return commander.ReaderFist<T>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value) });
 
         }
 
@@ -53,7 +61,7 @@ namespace MicroORM
 
         public virtual bool Update(T t, int id)
         {
-            string cmtext = query.Update(id.ToString());            
+            string cmtext = query.Update(id.ToString());
             using (CommanderBase commander = DBContext.CreateCommander())
                 return commander.NonQuery(cmtext, commander.SetParametrs(t));
         }
@@ -73,8 +81,8 @@ namespace MicroORM
         {
             string cmtext = query.RowCountWithSrc(srcClm);
             using (CommanderBase commander = DBContext.CreateCommander())
-            {                
-                var o = commander.Scaller(cmtext, new List<DbParameter>(){ commander.SetParametr(srcClm, srcValue) });
+            {
+                var o = commander.Scaller(cmtext, new List<DbParameter>() { commander.SetParametr(srcClm, srcValue) });
 
                 if (o != null) return Convert.ToInt32(o);
                 else return 0;

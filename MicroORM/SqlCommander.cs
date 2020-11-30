@@ -1,8 +1,7 @@
 ﻿
-using MicroORM.Interface;
+using NLog;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 
@@ -10,7 +9,9 @@ namespace MicroORM
 {
     public class SqlCommander : CommanderBase
     {
-       
+
+        
+
         public override List<DbParameter> SetParametrs<T>(T t)
         {
             List<DbParameter> parametrs = new List<DbParameter>();
@@ -35,7 +36,16 @@ namespace MicroORM
         public SqlCommander()
         {
             connectionString = ORMConfig.ConnectionString;
-            connection = new SqlConnection(connectionString);
+            try
+            {
+                connection = new SqlConnection(connectionString);
+            }
+            catch (Exception e)
+            {
+                LogManager.GetLogger(GetType().Name).Error(e.Message);
+                
+            }
+                        
         }
 
 

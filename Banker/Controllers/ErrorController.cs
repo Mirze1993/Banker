@@ -12,9 +12,7 @@ namespace Banker.Controllers
     {
         [Route("/Error")]
         public IActionResult Error(int statusCode)
-        {
-            int x = 0;
-            var aa = 4 / x;
+        {            
             return View();
         }
 
@@ -22,8 +20,8 @@ namespace Banker.Controllers
         public IActionResult Exception(int statusCode)
         {
             var errorInfo = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-            var l= LogManager.GetLogger("myLogger");
-            l.Error($"\n {errorInfo.Path} \nmessage:{errorInfo.Error.Message} \nTrack: {errorInfo.Error.StackTrace} \n source:{errorInfo.Error.Source} \n innerException :{errorInfo.Error.InnerException}");
+            var l = LogManager.GetLogger("");
+            l.Error($"\n {errorInfo.Path} \nmessage:{errorInfo.Error.Message} \nTrack: {errorInfo.Error.StackTrace}");
             return View("Error");
         }
     }

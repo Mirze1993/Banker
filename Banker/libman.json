@@ -27,6 +27,10 @@
         "css/bootstrap.min.css",
         "css/bootstrap.min.css.map"
       ]
+    },
+    {
+      "library": "bootstrap-year-calendar@1.1.1",
+      "destination": "wwwroot/lib/bootstrap-year-calendar/"
     }
   ]
 }

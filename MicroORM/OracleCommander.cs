@@ -1,10 +1,9 @@
-﻿using MicroORM.Interface;
+﻿
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Data.OracleClient;
+using NLog;
 
 namespace MicroORM
 {
@@ -32,7 +31,14 @@ namespace MicroORM
         public OracleCommander()
         {
             connectionString = ORMConfig.ConnectionString;
-            connection = new OracleConnection(connectionString);
+            try
+            {
+                connection = new OracleConnection(connectionString);
+            }
+            catch (Exception e)
+            {
+                LogManager.GetLogger(GetType().Name).Error(e.Message);
+            }
         }
     }
 }
