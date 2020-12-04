@@ -24,7 +24,7 @@ namespace Banker
             services.AddControllersWithViews();
 
 
-           
+           //sdf
             MicroORM.ORMConfig.ConnectionString = "Server=.\\SQLExpress;Database=Banker;Trusted_Connection=True;";
             MicroORM.ORMConfig.DbType = MicroORM.DbType.MSSQL;
 
