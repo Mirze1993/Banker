@@ -9,23 +9,28 @@ namespace MicroORM
     public abstract class CRUD<T> : ICRUD<T> where T : class, new()
     {
         IQuery<T> query;
+        public DBContext DBContext { get; set; }
 
         public CRUD()
         {
+            this.DBContext = new DBContext();
             query = DBContext.CreateQuary<T>();
+
         }
 
 
-        public virtual int Insert(T t)
+        public virtual (int,bool) Insert(T t,DbTransaction transaction=null)
         {
             string cmtext = query.Insert();
 
             using (CommanderBase commander = DBContext.CreateCommander())
             {
+               
                 var p = commander.SetParametrs(t);
-                var id = commander.Scaller(cmtext, p);
-                if (id != null) return Convert.ToInt32(id);
-                else return 0;
+                var (id,b) = commander.Scaller(cmtext, parameters:p,transaction:transaction);
+                
+                if (b&&id != null) return (Convert.ToInt32(id),b);
+                else return (0,b);
             }
         }
 
@@ -36,7 +41,7 @@ namespace MicroORM
             return commander.NonQuery(cmtext);
         }
 
-        public virtual List<T> GetByColumName(string columName, object value)
+        public virtual (List<T>,bool) GetByColumName(string columName, object value)
         {
             string cmtext = query.GetByColumName(columName);
             using (CommanderBase commander = DBContext.CreateCommander())
@@ -44,7 +49,7 @@ namespace MicroORM
 
         }
 
-        public virtual T GetByColumNameFist(string columName, object value)
+        public virtual (T,bool) GetByColumNameFist(string columName, object value)
         {
             string cmtext = query.GetByColumName(columName);
             using (CommanderBase commander = DBContext.CreateCommander())
@@ -52,7 +57,7 @@ namespace MicroORM
 
         }
 
-        public virtual List<T> GetAll(params string[] column)
+        public virtual (List<T>, bool) GetAll(params string[] column)
         {
             string cmtext = query.GetAll(column);
             using (CommanderBase commander = DBContext.CreateCommander())
@@ -66,37 +71,37 @@ namespace MicroORM
                 return commander.NonQuery(cmtext, commander.SetParametrs(t));
         }
 
-        public virtual int RowCount()
+        public virtual (int,bool) RowCount()
         {
             string cmtext = query.RowCount();
             using (CommanderBase commander = DBContext.CreateCommander())
             {
-                var o = commander.Scaller(cmtext);
-                if (o != null) return Convert.ToInt32(o);
-                else return 0;
+                var (o,b) = commander.Scaller(cmtext);
+                if (b && o != null) return (Convert.ToInt32(o), b);
+                else return (0, b);
             }
         }
 
-        public virtual int RowCountWithSrc(string srcClm, string srcValue)
+        public virtual (int, bool) RowCountWithSrc(string srcClm, string srcValue)
         {
             string cmtext = query.RowCountWithSrc(srcClm);
             using (CommanderBase commander = DBContext.CreateCommander())
             {
-                var o = commander.Scaller(cmtext, new List<DbParameter>() { commander.SetParametr(srcClm, srcValue) });
+                var (o,b) = commander.Scaller(cmtext, new List<DbParameter>() { commander.SetParametr(srcClm, srcValue) });
 
-                if (o != null) return Convert.ToInt32(o);
-                else return 0;
+                if (b && o != null) return (Convert.ToInt32(o), b);
+                else return (0, b);
             }
         }
 
-        public virtual List<T> getFromTo(int from, int to)
+        public virtual (List<T>,bool) GetFromTo(int from, int to)
         {
             string cmtext = query.getFromTo(from, to);
             using (CommanderBase commander = DBContext.CreateCommander())
                 return commander.Reader<T>(cmtext);
         }
 
-        public virtual List<T> getFromToWithSrc(int from, int to, string srcClm, string srcValue)
+        public virtual (List<T>, bool) GetFromToWithSrc(int from, int to, string srcClm, string srcValue)
         {
             string cmtext = query.getFromToWithSrc(from, to, srcClm);
             using (CommanderBase commander = DBContext.CreateCommander())

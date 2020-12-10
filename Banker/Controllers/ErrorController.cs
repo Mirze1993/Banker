@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MicroORM.Logging;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using NLog;
+
 
 namespace Banker.Controllers
 {
@@ -17,11 +18,11 @@ namespace Banker.Controllers
         }
 
         [Route("/Exception")]
-        public IActionResult Exception(int statusCode)
+        public async Task<IActionResult> Exception(int statusCode)
         {
             var errorInfo = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-            var l = LogManager.GetLogger("");
-            l.Error($"\n {errorInfo.Path} \nmessage:{errorInfo.Error.Message} \nTrack: {errorInfo.Error.StackTrace}");
+            var l = new LogWriteFile();
+            await l.WriteFileAsync($"{errorInfo.Path} message:{errorInfo.Error.Message} {Environment.NewLine}Track: {errorInfo.Error.StackTrace}",LogLevel.Error);
             return View("Error");
         }
     }

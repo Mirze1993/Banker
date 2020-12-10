@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Banker", "Banker\Banker.csproj", "{0825630D-F66F-4900-8959-35BA238C16C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Banker", "Banker\Banker.csproj", "{0825630D-F66F-4900-8959-35BA238C16C7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroORM", "MicroORM\MicroORM.csproj", "{224F49ED-CA4B-4660-BA2B-34DFAA5B502F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{02D664DC-256C-49B4-87A9-959946D57865}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroORMTests", "MicroORMTests\MicroORMTests.csproj", "{176AA50D-C8BC-449D-9BEE-57D1B63984C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{224F49ED-CA4B-4660-BA2B-34DFAA5B502F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{224F49ED-CA4B-4660-BA2B-34DFAA5B502F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{224F49ED-CA4B-4660-BA2B-34DFAA5B502F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02D664DC-256C-49B4-87A9-959946D57865}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02D664DC-256C-49B4-87A9-959946D57865}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02D664DC-256C-49B4-87A9-959946D57865}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02D664DC-256C-49B4-87A9-959946D57865}.Release|Any CPU.Build.0 = Release|Any CPU
+		{176AA50D-C8BC-449D-9BEE-57D1B63984C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{176AA50D-C8BC-449D-9BEE-57D1B63984C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{176AA50D-C8BC-449D-9BEE-57D1B63984C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{176AA50D-C8BC-449D-9BEE-57D1B63984C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

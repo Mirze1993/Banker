@@ -34,6 +34,7 @@ namespace Banker.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(Login model)
         {
+            
             if (!ModelState.IsValid) return View(model);
             var (u,b)=Repositoty.CheckUser(model.Email, model.Password);
             if (!b) {
@@ -72,7 +73,7 @@ namespace Banker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var u = Repositoty.GetByColumName("Email", model.Email);
+                var (u,b) = Repositoty.GetByColumName("Email", model.Email);
 
                 if (u.Count > 0)
                 {
@@ -86,7 +87,8 @@ namespace Banker.Controllers
                     Password = new HashCreate().CreateHashString(model.Password)
                 });
 
-                return RedirectToAction("Index");
+
+                return RedirectToAction("Login");
             }
             return View(model);
         }
@@ -102,7 +104,7 @@ namespace Banker.Controllers
         
         public IActionResult Index()
         {
-            return View();
+            return View();           
         }
     }
 }

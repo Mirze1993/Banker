@@ -10,10 +10,11 @@ namespace Banker.Repository
     {
         public (AppUsers, bool) CheckUser(string email, string password)
         {
-            var user = GetByColumNameFist("Email", email);
-            if (user==null) return (null, false);
-            var b = new HashCreate().VerfiyPassword(password, user.Password);
+            var (user,b) = GetByColumNameFist("Email", email);
+            if (user==null||b) return (null, b);
+            b = new HashCreate().VerfiyPassword(password, user.Password);
             return (b ? user : null, b);
         }
+
     }
 }

@@ -1,5 +1,5 @@
 ﻿
-using NLog;
+using MicroORM.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,11 +13,16 @@ namespace MicroORM
         protected DbConnection connection;
         public DbDataReader reader;
         protected DbCommand command;
-        protected DbTransaction transaction;
+        
 
         protected string connectionString;
 
+        public LogWriteFile logManager;
 
+        public CommanderBase()
+        {
+            logManager = new LogWriteFile();
+        }
 
         public abstract List<DbParameter> SetParametrs<T>(T t);
 
@@ -32,62 +37,26 @@ namespace MicroORM
 
 
 
-        public void TransactionStart()
+        public DbTransaction TransactionStart()
         {
-            transaction = connection.BeginTransaction(IsolationLevel.Serializable);
+            return connection.BeginTransaction(IsolationLevel.Serializable);           
         }
 
-        public void TransactionCommit()
+        protected void CommandStart(string commandText, List<DbParameter> parameters = null, CommandType commandType=CommandType.Text,DbTransaction transaction=null)
         {
-            if (transaction == null) return;
-            transaction?.Commit();
-            transaction?.Dispose();
-        }
-
-
-        public void TransactionComand(string commandText, List<DbParameter> parameters)
-        {
-            if (transaction == null) return;
-            command.Transaction = transaction;
-            var b = NonQuery(commandText, parameters);
-            if (b) return;
-            transaction.Rollback();
-            transaction.Dispose();
-            LogManager.GetLogger(GetType().Name).Error("Transaction   roleback");
-        }
-        public void TransactionComand(CommandType type, string commandText, List<DbParameter> parameters)
-        {
-            if (transaction == null) return;
-            command.Transaction = transaction;
-            var b = NonQuery(type, commandText, parameters);
-            if (b) return;
-            transaction.Rollback();
-            transaction.Dispose();
-            LogManager.GetLogger(GetType().Name).Error("Transaction   roleback");
-        }
-
-
-        protected void CommandStart(string commandText, List<DbParameter> parameters = null)
-        {
-
             command = connection.CreateCommand();
             command.CommandText = commandText;
-            if (parameters != null) command.Parameters.AddRange(parameters.ToArray());
-        }
-
-        protected void CommandStart(CommandType commandType, string commandText, List<DbParameter> parameters = null)
-        {
-            CommandStart(commandText, parameters);
             command.CommandType = commandType;
+            if (parameters != null) command.Parameters.AddRange(parameters.ToArray());
+            if (transaction != null) command.Transaction=transaction;
         }
+        
 
-
-
-        //nonquery
-        public bool NonQuery(string commandText, List<DbParameter> Parameters = null)
+        
+        public bool NonQuery( string commandText, List<DbParameter> parameters = null, CommandType commandType=CommandType.Text,DbTransaction transaction=null)
         {
 
-            CommandStart(commandText, Parameters);
+            CommandStart(commandText, parameters,commandType,transaction);
             ConnectionOpen();
             bool b = false;
             try
@@ -96,72 +65,39 @@ namespace MicroORM
             }
             catch (Exception e)
             {
-                LogManager.GetLogger(GetType().Name).Error(e.Message);
-            }
-            return b;
-        }
-
-        public bool NonQuery(CommandType commandType, string commandText, List<DbParameter> Parameters = null)
-        {
-
-            CommandStart(commandType, commandText, Parameters);
-            ConnectionOpen();
-            bool b = false;
-            try
-            {
-                b = command.ExecuteNonQuery() > 0;
-            }
-            catch (Exception e)
-            {
-                LogManager.GetLogger(GetType().Name).Error(e.Message);
+                logManager.WriteFile(e.Message, LogLevel.Error);
             }
             return b;
         }
 
 
 
-        //Scaller
-        public object Scaller(string commandText, List<DbParameter> parameters = null)
+
+        public (object,bool) Scaller(string commandText, List<DbParameter> parameters = null, CommandType commandType=CommandType.Text, DbTransaction transaction=null)
         {
 
-            CommandStart(commandText, parameters);
+            CommandStart(commandText, parameters, commandType, transaction);
             ConnectionOpen();
             object b = null;
             try
             {
                 b = command.ExecuteScalar();
+                return (b, true);
             }
             catch (Exception e)
             {
-                LogManager.GetLogger(GetType().Name).Error(e.Message);
-            }
-            return b;
-        }
-
-        public object Scaller(string commandText, CommandType type, List<DbParameter> parameters = null)
-        {
-
-            CommandStart(type, commandText, parameters);
-            ConnectionOpen();
-            object b = null;
-            try
-            {
-                b = command.ExecuteScalar();
-            }
-            catch (Exception e)
-            {
-                LogManager.GetLogger(GetType().Name).Error(e.Message);
-            }
-            return b;
+                logManager.WriteFile(e.Message, LogLevel.Error);
+                return (b, true);
+            }            
         }
 
 
 
         //reader
-        public T Reader<T>(Func<DbDataReader, T> readMetod, string commandText, List<DbParameter> parameters = null)
+        public (T,bool) Reader<T>(Func<DbDataReader, T> readMetod, string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null)
         {
 
-            CommandStart(commandText, parameters);
+            CommandStart(commandText, parameters, commandType, transaction);
             ConnectionOpen();
             try
             {
@@ -169,50 +105,25 @@ namespace MicroORM
             }
             catch (Exception e)
             {
-                LogManager.GetLogger(GetType().Name).Error(e.Message);
-                return default(T);
+                logManager.WriteFile(e.Message, LogLevel.Error);
+                return (default(T),false);
             }
-            var r = readMetod(reader);
-            return r;
+            var t = readMetod(reader);
+            return (t,true);
         }
 
-        public T Reader<T>(Func<DbDataReader, T> readMetod, string commandText, CommandType type, List<DbParameter> parameters = null)
+
+        public (List<T>,bool) Reader<T>(string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null) where T : class, new()
         {
-            CommandStart(type, commandText, parameters);
-            ConnectionOpen();
-            try
-            {
-                reader = command.ExecuteReader();
-            }
-            catch (Exception e)
-            {
-                LogManager.GetLogger(GetType().Name).Error(e.Message); return default(T);
-            }
-            var r = readMetod(reader);
-            return r;
+            return Reader(GetList<T>, commandText, parameters, commandType, transaction);
         }
 
-
-        public List<T> Reader<T>(string commandText, List<DbParameter> parameters = null) where T : class, new()
+        public (T,bool) ReaderFist<T>(string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null) where T : class, new()
         {
-            return Reader(GetList<T>, commandText, parameters);
+            return Reader(GetFist<T>, commandText, parameters, commandType, transaction);
         }
 
-        public T ReaderFist<T>(string commandText, List<DbParameter> parameters = null) where T : class, new()
-        {
-            return Reader(GetFist<T>, commandText, parameters);
-        }
-
-        public List<T> Reader<T>(string commandText, CommandType type, List<DbParameter> parameters = null) where T : class, new()
-        {
-            return Reader(GetList<T>, commandText, type, parameters);
-        }
-
-        public T ReaderFist<T>(string commandText, CommandType type, List<DbParameter> parameters = null) where T : class, new()
-        {
-            return Reader(GetFist<T>, commandText, type, parameters);
-        }
-
+       
         protected List<T> GetList<T>(DbDataReader r) where T : class, new()
         {
             List<T> list = new List<T>();
@@ -232,6 +143,7 @@ namespace MicroORM
                 }
                 list.Add(t);
             }
+            if (!r.IsClosed) r.Close();
             return list;
         }
 
@@ -253,6 +165,7 @@ namespace MicroORM
                 }
                 break;
             }
+            if (!r.IsClosed) r.Close();
             return t;
         }
 
@@ -262,7 +175,6 @@ namespace MicroORM
             if (reader != null)
                 if (!reader.IsClosed) reader.Close();
             command?.Dispose();
-            transaction?.Dispose();
             if (connection == null) return;
             if (connection.State != ConnectionState.Closed) connection.Close();
             connection.Dispose();

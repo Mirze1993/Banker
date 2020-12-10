@@ -1,5 +1,5 @@
 ﻿
-using NLog;
+using MicroORM.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -8,9 +8,7 @@ using System.Data.SqlClient;
 namespace MicroORM
 {
     public class SqlCommander : CommanderBase
-    {
-
-        
+    {      
 
         public override List<DbParameter> SetParametrs<T>(T t)
         {
@@ -42,8 +40,7 @@ namespace MicroORM
             }
             catch (Exception e)
             {
-                LogManager.GetLogger(GetType().Name).Error(e.Message);
-                
+                logManager.WriteFile(e.Message, LogLevel.Error);
             }
                         
         }

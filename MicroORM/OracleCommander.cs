@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.OracleClient;
-using NLog;
+
 
 namespace MicroORM
 {
@@ -37,7 +37,7 @@ namespace MicroORM
             }
             catch (Exception e)
             {
-                LogManager.GetLogger(GetType().Name).Error(e.Message);
+                //LogManager.GetLogger(GetType().Name).Error(e.Message);
             }
         }
     }

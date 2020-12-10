@@ -15,7 +15,12 @@ namespace Banker
 {
     public class Startup
     {
-        
+        public IWebHostEnvironment  Environment { get; }
+
+        public Startup(IWebHostEnvironment environment)
+        {
+            Environment = environment;
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -27,6 +32,8 @@ namespace Banker
            //sdf
             MicroORM.ORMConfig.ConnectionString = "Server=.\\SQLExpress;Database=Banker;Trusted_Connection=True;";
             MicroORM.ORMConfig.DbType = MicroORM.DbType.MSSQL;
+            MicroORM.Logging.FileLoggerOptions.FolderPath = System.IO.Path.Combine(this.Environment.WebRootPath,"Log");
+
 
             services.AddAuthentication(option =>
             {
