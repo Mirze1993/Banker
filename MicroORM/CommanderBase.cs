@@ -30,6 +30,8 @@ namespace MicroORM
         public abstract DbParameter SetParametr(string paramName, object value);
 
 
+        public abstract DbParameter SetOutputParametr();
+
         protected void ConnectionOpen()
         {
             if (connection.State != ConnectionState.Open) connection.Open();
@@ -87,7 +89,7 @@ namespace MicroORM
             catch (Exception e)
             {
                 logManager.WriteFile(e.Message, LogLevel.Error);
-                return (b, true);
+                return (0, false);
             }            
         }
 

@@ -6,20 +6,22 @@ using Banker.Repository;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+
 
 namespace Banker
 {
     public class Startup
     {
         public IWebHostEnvironment  Environment { get; }
+        public IConfiguration Config { get; }
 
-        public Startup(IWebHostEnvironment environment)
+        public Startup(IWebHostEnvironment environment, IConfiguration config)
         {
             Environment = environment;
+            Config = config;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -29,8 +31,8 @@ namespace Banker
             services.AddControllersWithViews();
 
 
-           //sdf
-            MicroORM.ORMConfig.ConnectionString = "Server=.\\SQLExpress;Database=Banker;Trusted_Connection=True;";
+            //sdf
+            MicroORM.ORMConfig.ConnectionString = Config.GetConnectionString("DefaultConnection");
             MicroORM.ORMConfig.DbType = MicroORM.DbType.MSSQL;
             MicroORM.Logging.FileLoggerOptions.FolderPath = System.IO.Path.Combine(this.Environment.WebRootPath,"Log");
 
@@ -43,7 +45,7 @@ namespace Banker
             }).AddCookie(option=> {
                 option.LoginPath = "/Home/Login";
                 option.LogoutPath = "/Home/Index";
-                option.Cookie.Name = "Banker";
+                option.Cookie.Name = "Banker";                
             });
 
 

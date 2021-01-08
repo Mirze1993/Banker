@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace Banker.Model
 {
-    public class UserRole
+    public class Kredit:BPMBase
     {
-        public int Id { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
+        public double Amount { get; set; }       
     }
 }

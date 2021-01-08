@@ -29,6 +29,12 @@ namespace MicroORM
             return new SqlParameter($"@{paramName}", value);
         }
 
+        public override DbParameter SetOutputParametr()
+        {
+            SqlParameter p = new SqlParameter();
+            p.Direction = System.Data.ParameterDirection.ReturnValue;
+            return p;
+        }
 
 
         public SqlCommander()

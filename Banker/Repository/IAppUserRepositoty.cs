@@ -10,5 +10,7 @@ namespace Banker.Repository
     public interface IAppUserRepositoty:ICRUD<AppUsers>
     {
         (AppUsers, bool) CheckUser(string email,string password);
+        List<UserClaims> GetUserRoles(int userId);
     }
+    
 }

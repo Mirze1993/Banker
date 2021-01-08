@@ -47,11 +47,15 @@ namespace Banker.Controllers
                 IsPersistent = model.RebemberMe,
             };
 
+            
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.NameIdentifier,u.Id.ToString()),
-                new Claim(ClaimTypes.Name,u.Email),
+                new Claim(ClaimTypes.Name,u.Email),                
             };
+            var roles = Repositoty.GetUserRoles(u.Id);
+            if (roles != null)
+                roles.ForEach(c => claims.Add(new Claim(ClaimTypes.Role, c.Value)));
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -72,22 +76,22 @@ namespace Banker.Controllers
         public IActionResult Register(Register model)
         {
             if (ModelState.IsValid)
-            {
-                var (u,b) = Repositoty.GetByColumName("Email", model.Email);
-
-                if (u.Count > 0)
-                {
-                    ModelState.AddModelError("", $"{model.Email} is alreay  use");
-                    return View(model);
-                }
-                var userId = Repositoty.Insert(new AppUsers()
+            {   
+                var (id, b) = Repositoty.Insert(new AppUsers()
                 {
                     Email = model.Email,
                     Name = model.Name,
                     Password = new HashCreate().CreateHashString(model.Password)
                 });
-
-
+                if (id == -1) {
+                    ModelState.AddModelError("", $"{model.Email} is alreay  use");
+                    return View(model);
+                }
+                if (id == 0)
+                {
+                    ModelState.AddModelError("", $"Qeydiyatda xeta bas verdi");
+                    return View(model);
+                }
                 return RedirectToAction("Login");
             }
             return View(model);
