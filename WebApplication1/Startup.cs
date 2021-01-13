@@ -13,19 +13,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebServiceIAMAS
+namespace WebApplication1
 {
     public class Startup
     {
+
         public IConfiguration Config { get; }
         public IWebHostEnvironment Environment { get; }
 
-        public Startup(IConfiguration config,IWebHostEnvironment environment)
+        public Startup(IConfiguration config, IWebHostEnvironment environment)
         {
             Config = config;
             Environment = environment;
         }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -66,7 +66,6 @@ namespace WebServiceIAMAS
                     }
                 });
             });
-            
 
             services.AddAuthentication(o =>
             {
@@ -76,30 +75,28 @@ namespace WebServiceIAMAS
             }).AddJwtBearer(o => {
                 //serverde tokenin saxlanmasi ucun
                 //o.SaveToken = true;                
-                
+
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
-                    
+
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Config["Token:Key"])),
                     //3 mertebeli token
                     ValidateIssuerSigningKey = true,
                     //tokeni kimin verdiyi
                     ValidateIssuer = false,
                     //tokenin kimlerin istifade edeceyini mueyyen edir
-                    ValidateAudience=false,
+                    ValidateAudience = false,
                 };
+                #region config MicroORM
+                MicroORM.ORMConfig.ConnectionString = Config.GetConnectionString("DefaultConnection");
+                MicroORM.ORMConfig.DbType = MicroORM.DbType.MSSQL;
+                //MicroORM.Logging.FileLoggerOptions.FolderPath = System.IO.Path.Combine(this.Environment.WebRootPath, "Log");
+                #endregion
 
-                
             });
-
-            #region config MicroORM
-            MicroORM.ORMConfig.ConnectionString = Config.GetConnectionString("DefaultConnection");
-            MicroORM.ORMConfig.DbType = MicroORM.DbType.MSSQL;
-            MicroORM.Logging.FileLoggerOptions.FolderPath = System.IO.Path.Combine(this.Environment.WebRootPath, "Log");
-            #endregion
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.l
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -107,20 +104,16 @@ namespace WebServiceIAMAS
                 app.UseDeveloperExceptionPage();
             }
 
-            //expection handiler
-
-
             app.UseRouting();
-            //swagger
+
             app.UseSwagger();
-            app.UseSwaggerUI(c =>{c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");});
-            //author
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1"); });
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
             });
         }
     }

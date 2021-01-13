@@ -1,20 +1,21 @@
-﻿using Banker.Model;
-using Banker.Tools;
-using MicroORM;
-using System;
+﻿using MicroORM;
+using MicroORM.Tools;
+using Models.DBModel;
 using System.Collections.Generic;
 using System.Data.Common;
 
-namespace Banker.Repository
+namespace WebAPIRest.Repository
 {
     public class AppUsersRepository : CRUD<AppUsers>, IAppUserRepositoty
     {
-        public (AppUsers, bool) CheckUser(string email, string password)
+        public (AppUsers, string) CheckUser(string email, string password)
         {
             var (user,b) = GetByColumNameFist("Email", email);
-            if (user==null||!b) return (null, b);
+            if (!b) return (null, "Error");
+            if (user == null)return (null, "User Not Found");
             b = new HashCreate().VerfiyPassword(password, user.Password);
-            return (b ? user : null, b);
+            if (!b) return (null, "Password incorrect");
+            return (user , "Success");
         }
 
         public override (int, bool) Insert(AppUsers t, DbTransaction transaction = null)

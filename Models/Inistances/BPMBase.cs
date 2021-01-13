@@ -1,18 +1,24 @@
-﻿using System;
+﻿using CommonTool;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Banker.Model
+namespace Models.Inistances
 {
-    public class BPMBase
+    public class Ins_Base
     {
         public int Id { get; set; }
-        public string Initiator { get; set; }
-        public string Responsible { get; set; }
+        public int InitiatorId { get; set; }
+        public int ResponsibleId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string Status { get; set; }
+
+        [DbMaping(DbMap.noMaping)]
+        public string InitiatorName { get; set; }
+        [DbMaping(DbMap.noMaping)]
+        public string ResponsibleName { get; set; }
     }
 
     public static class ProcessStatus

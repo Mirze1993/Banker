@@ -45,7 +45,9 @@ namespace MicroORM
         {
             string cmtext = query.GetByColumName(columName);
             using (CommanderBase commander = DBContext.CreateCommander())
+            {
                 return commander.Reader<T>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value) });
+            }
 
         }
 
@@ -53,7 +55,9 @@ namespace MicroORM
         {
             string cmtext = query.GetByColumName(columName);
             using (CommanderBase commander = DBContext.CreateCommander())
+            {
                 return commander.ReaderFist<T>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value) });
+            }
 
         }
 

@@ -1,4 +1,5 @@
-﻿using MicroORM.Interface;
+﻿using CommonTool;
+using MicroORM.Interface;
 using System;
 
 
@@ -74,6 +75,9 @@ namespace MicroORM.SqlQuery
             string values = "";
             foreach (var item in GetTypeT.GetProperties())
             {
+                var t = (DbMapingAttribute)Attribute.GetCustomAttribute(item, typeof(DbMapingAttribute));
+                if (t != null) if (t.Map == DbMap.noMaping) continue;
+
                 if (item.Name == "Id") continue;
                 columns += $"{item.Name} ,";
                 values += $"@{item.Name} ,";
@@ -123,6 +127,8 @@ namespace MicroORM.SqlQuery
             else
                 foreach (var item in GetTypeT.GetProperties())
                 {
+                    var t = (DbMapingAttribute)Attribute.GetCustomAttribute(item, typeof(DbMapingAttribute));
+                    if (t != null) if (t.Map == DbMap.noMaping) continue;
                     if (item.Name == "Id") continue;
                     columns += $"{item.Name}=@{item.Name} ,";
                 }

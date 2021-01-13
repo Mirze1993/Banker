@@ -1,4 +1,5 @@
 ﻿
+using CommonTool;
 using MicroORM.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace MicroORM
         protected DbConnection connection;
         public DbDataReader reader;
         protected DbCommand command;
-        
+
 
         protected string connectionString;
 
@@ -41,24 +42,24 @@ namespace MicroORM
 
         public DbTransaction TransactionStart()
         {
-            return connection.BeginTransaction(IsolationLevel.Serializable);           
+            return connection.BeginTransaction(IsolationLevel.Serializable);
         }
 
-        protected void CommandStart(string commandText, List<DbParameter> parameters = null, CommandType commandType=CommandType.Text,DbTransaction transaction=null)
+        protected void CommandStart(string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null)
         {
             command = connection.CreateCommand();
             command.CommandText = commandText;
             command.CommandType = commandType;
             if (parameters != null) command.Parameters.AddRange(parameters.ToArray());
-            if (transaction != null) command.Transaction=transaction;
+            if (transaction != null) command.Transaction = transaction;
         }
-        
 
-        
-        public bool NonQuery( string commandText, List<DbParameter> parameters = null, CommandType commandType=CommandType.Text,DbTransaction transaction=null)
+
+
+        public bool NonQuery(string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null)
         {
 
-            CommandStart(commandText, parameters,commandType,transaction);
+            CommandStart(commandText, parameters, commandType, transaction);
             ConnectionOpen();
             bool b = false;
             try
@@ -75,7 +76,7 @@ namespace MicroORM
 
 
 
-        public (object,bool) Scaller(string commandText, List<DbParameter> parameters = null, CommandType commandType=CommandType.Text, DbTransaction transaction=null)
+        public (object, bool) Scaller(string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null)
         {
 
             CommandStart(commandText, parameters, commandType, transaction);
@@ -90,13 +91,13 @@ namespace MicroORM
             {
                 logManager.WriteFile(e.Message, LogLevel.Error);
                 return (0, false);
-            }            
+            }
         }
 
 
 
         //reader
-        public (T,bool) Reader<T>(Func<DbDataReader, T> readMetod, string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null)
+        public (T, bool) Reader<T>(Func<DbDataReader, T> readMetod, string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null)
         {
 
             CommandStart(commandText, parameters, commandType, transaction);
@@ -108,24 +109,24 @@ namespace MicroORM
             catch (Exception e)
             {
                 logManager.WriteFile(e.Message, LogLevel.Error);
-                return (default(T),false);
+                return (default(T), false);
             }
             var t = readMetod(reader);
-            return (t,true);
+            return (t, true);
         }
 
 
-        public (List<T>,bool) Reader<T>(string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null) where T : class, new()
+        public (List<T>, bool) Reader<T>(string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null) where T : class, new()
         {
             return Reader(GetList<T>, commandText, parameters, commandType, transaction);
         }
 
-        public (T,bool) ReaderFist<T>(string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null) where T : class, new()
+        public (T, bool) ReaderFist<T>(string commandText, List<DbParameter> parameters = null, CommandType commandType = CommandType.Text, DbTransaction transaction = null) where T : class, new()
         {
             return Reader(GetFist<T>, commandText, parameters, commandType, transaction);
         }
 
-       
+
         protected List<T> GetList<T>(DbDataReader r) where T : class, new()
         {
             List<T> list = new List<T>();
@@ -136,10 +137,16 @@ namespace MicroORM
                 T t = new T();
                 foreach (var item in typeof(T).GetProperties())
                 {
+                    var attribute = (DbMapingAttribute)Attribute.GetCustomAttribute(item, typeof(DbMapingAttribute));
+                    if (attribute != null) if (attribute.Map == DbMap.noMaping) continue;
                     try
                     {
                         var value = r[item.Name];
-                        item.SetValue(t, value);
+                        
+                        if (item.PropertyType.IsEnum)
+                            item.SetValue(t, Enum.Parse(item.PropertyType, value.ToString()),null);
+                        else
+                            item.SetValue(t, value);
                     }
                     catch { }
                 }
@@ -158,10 +165,14 @@ namespace MicroORM
             {
                 foreach (var item in typeof(T).GetProperties())
                 {
+                    var attribute = (DbMapingAttribute)Attribute.GetCustomAttribute(item, typeof(DbMapingAttribute));
+                    if (attribute != null) if (attribute.Map == DbMap.noMaping) continue;
                     try
                     {
                         var value = r[item.Name];
-                        item.SetValue(t, value);
+                        if (item.PropertyType.IsEnum)
+                            item.SetValue(t, Enum.Parse(item.PropertyType, value.ToString()), null);
+                        else item.SetValue(t, value);
                     }
                     catch { }
                 }

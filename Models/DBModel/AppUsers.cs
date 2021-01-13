@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Banker.Model
+namespace Models.DBModel
 {
     public class AppUsers
     {

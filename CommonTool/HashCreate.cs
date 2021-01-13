@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+﻿
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 
-namespace Banker.Tools
+using System.Security.Cryptography;
+
+
+namespace CommonTool
 {
     public class HashCreate
     {
@@ -23,18 +23,18 @@ namespace Banker.Tools
         {
             SaltCreate();
             hash = KeyDerivation.Pbkdf2(
-                password:password,
-                salt:salt,
-                prf:KeyDerivationPrf.HMACSHA256,
-                iterationCount:50,
-                numBytesRequested:hashSize
+                password: password,
+                salt: salt,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 50,
+                numBytesRequested: hashSize
                 );
             return Convert.ToBase64String(hash);
         }
 
         byte[] CreateHash(string password, byte[] salt)
         {
-            hash=KeyDerivation.Pbkdf2(
+            hash = KeyDerivation.Pbkdf2(
                 password: password,
                 salt: salt,
                 prf: KeyDerivationPrf.HMACSHA256,
@@ -55,14 +55,15 @@ namespace Banker.Tools
 
         public bool VerfiyPassword(string stringPassword, string hasPassword)
         {
+            if (string.IsNullOrEmpty(stringPassword) || string.IsNullOrEmpty(hasPassword))
+                return false;
             var oldHashPas = Convert.FromBase64String(hasPassword);
             var saltOld = new byte[saltSize];
             Buffer.BlockCopy(oldHashPas, 0, saltOld, 0, saltSize);
-            var newHash=CreateHash(stringPassword, saltOld);
+            var newHash = CreateHash(stringPassword, saltOld);
             for (int i = 0; i < newHash.Length; i++)
                 if (newHash[i] != oldHashPas[saltSize + i]) return false;
-            return true;            
+            return true;
         }
-
     }
 }

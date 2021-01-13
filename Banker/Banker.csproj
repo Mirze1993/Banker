@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MicroORM\MicroORM.csproj" />
+    <ProjectReference Include="..\Models\Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

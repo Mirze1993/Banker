@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Banker.UIModel
 {
-    public class Login
+    public class UILogin
     {
         [EmailAddress]
         public string Email { get; set; }
