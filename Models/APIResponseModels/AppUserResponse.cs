@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Models.APIResponseModels
 {
-    public class LoginResponse:ResponseBase
+    public class AppUserResponse:ResponseBase
     {
         public AppUsers User { get; set; }
         public List<UserClaims> UserClaims { get; set; }

@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Log\" />
+    <Folder Include="wwwroot\documents\" />
   </ItemGroup>
 
 </Project>

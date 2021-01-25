@@ -20,10 +20,12 @@ namespace MicroORM.SqlQuery.Tests
             MicroORM.ORMConfig.DbType = MicroORM.DbType.MSSQL;
             var t = new Ins_BiznesOverdraftReposotory();
             var (m, b) = t.GetByColumNameFist("Id", 1);
-            Console.WriteLine(m.DovruyyeNovu.ToString());
-            
-            //var a =Enum.Parse( typeof(Ins_BiznesOverdraft_Enum_Aylar), "2");
+            Console.WriteLine(m.BranchId.ToString()+ "///"+m.test.ToString());
+            // var t = Nullable.GetUnderlyingType(typeof(A).GetProperty("bb").PropertyType);
+            //var a =Enum.Parse(Nullable.GetUnderlyingType(typeof(A).GetProperty("bb").PropertyType), "2");
             //Console.WriteLine(a);
         }
+
+
     }
 }

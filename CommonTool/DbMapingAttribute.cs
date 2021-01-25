@@ -15,6 +15,6 @@ namespace CommonTool
 
     public enum DbMap
     {
-        Maping,noMaping
+        Maping,noMaping,JoinColumn
     }
 }

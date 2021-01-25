@@ -2,8 +2,9 @@
 @{
     ViewData["Title"] = "Step1";
     Layout = "~/Views/Shared/_ProsessLayout.cshtml";
-    var branchess =(List<SelectListItem>) ViewBag.Branchs;
- }
+    var branchess = (List<SelectListItem>)ViewBag.Branchs;
+    int count = 0;
+}
 
 
 <div class="container-fluid">
@@ -28,66 +29,94 @@
         <div class="card-header">
             <h3 class="card-title">Prosess</h3>
         </div>
-        <form   method="post" >
-            <input type="hidden" asp-for="Id"/>
+        <form asp- method="post">
+            <input type="hidden" asp-for="Id" />
             <div class="card-body">
-               <div class="row border border-primary">
-                   <div class="col-sm-6">
-                       <div class="form-group row">
-                           <label asp-for="Name" class="col-sm-3 col-form-label"></label>
-                           <div class="col-sm-9">
-                               <input asp-for="Name" class="form-control" />
-                           </div>
-                       </div>
-                       <div class="form-group row">
-                           <label asp-for="Cif" class="col-sm-3 col-form-label"></label>
-                           <div class="col-sm-9">
-                               <input asp-for="Cif" class="form-control" />
-                           </div>
-                       </div>
-                       <div class="form-group row">
-                           <label asp-for="Voen" class="col-sm-3 col-form-label"></label>
-                           <div class="col-sm-9">
-                               <input asp-for="Voen" class="form-control" />
-                           </div>
-                       </div>
-                       <div class="form-group row">
-                           <label asp-for="BranchId" class="col-sm-3 col-form-label">Branch</label>
-                           <div class="col-sm-9">
-                               <select asp-for="BranchId" asp-items="branchess"></select>
-                           </div>
-                       </div>
-                   </div>
-                   <div class="col-sm-6">
-                       <div class="form-group row">
-                           <label asp-for="Amount" class="col-sm-3 col-form-label"></label>
-                           <div class="col-sm-9">
-                               <input asp-for="Amount" class="form-control" />
-                           </div>
-                       </div>
-                       <div class="form-group row">
-                           <label asp-for="Rate" class="col-sm-3 col-form-label"></label>
-                           <div class="col-sm-9">
-                               <input asp-for="Rate" class="form-control" />
-                           </div>
-                       </div>
-                       <div class="form-group row">
-                           <label asp-for="Aylar" class="col-sm-3 col-form-label"></label>
-                           <div class="col-sm-9">
-                               <select asp-for="Aylar" asp-items="Html.GetEnumSelectList<Ins_BiznesOverdraft_Enum_Aylar>()"></select>
-                           </div>
-                       </div>
-                       <div class="form-group row">
-                           <label asp-for="DovruyyeNovu" class="col-sm-3 col-form-label"></label>
-                           <div class="col-sm-9">
-                               <select asp-for="DovruyyeNovu" asp-items="Html.GetEnumSelectList<Ins_BiznesOverdraft_Enum_DovruyyeNovu>()"></select>
-                           </div>
-                       </div>
-                   </div>
-               </div> 
+                <div class="row border border-primary">
+                    <div class="col-sm-6">
+                        <div class="form-group row">
+                            <label asp-for="Name" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Name" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="Cif" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Cif" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="Voen" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Voen" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="BranchId" class="col-sm-3 col-form-label">Branch</label>
+                            <div class="col-sm-9">
+                                <select asp-for="BranchId" asp-items="branchess"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group row">
+                            <label asp-for="Amount" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Amount" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="Rate" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Rate" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="Aylar" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <select asp-for="Aylar" asp-items="Html.GetEnumSelectList<Ins_BiznesOverdraft_Enum_Aylar>()"></select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="DovruyyeNovu" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <select asp-for="DovruyyeNovu" asp-items="Html.GetEnumSelectList<Ins_BiznesOverdraft_Enum_DovruyyeNovu>()"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row border border-primary">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Ay</th>
+                                <th>Məbləğ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Dovruyeler)
+                            {
+                                <tr>
+                                    <td>
+                                        <label>@item.Date</label>
+                                    <input type="hidden" name="[@count].Date" value="@item.Date"/>
+                                    </td>
+                                    <td>
+                                        <input name="[@count].Amount" />
+                                        <input type="hidden" name="[@count].Ins_BiznesOverdraftId" value="@item.Ins_BiznesOverdraftId"/>
+                                    </td>
+                                </tr>
+                                { count++; }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
             <div class="card-footer">
-                <button type="submit" class="btn btn-primary">Növbəti</button>
+                <button asp-action="Step1End" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" type="submit" class="btn btn-primary">Növbəti</button>
+                <a asp-action="Stop" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" class="btn btn-danger">Prosesi dayandır</a>
             </div>
         </form>
     </div>

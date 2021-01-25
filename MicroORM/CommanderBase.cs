@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-
+using System.Linq;
 
 namespace MicroORM
 {
@@ -134,19 +134,25 @@ namespace MicroORM
 
             while (r.Read())
             {
+               // var fieldNames = Enumerable.Range(0, r.FieldCount).Select(i => r.GetName(i)).ToArray();
                 T t = new T();
                 foreach (var item in typeof(T).GetProperties())
                 {
+                    //if (!fieldNames.Contains(item.Name)) continue;
                     var attribute = (DbMapingAttribute)Attribute.GetCustomAttribute(item, typeof(DbMapingAttribute));
                     if (attribute != null) if (attribute.Map == DbMap.noMaping) continue;
                     try
                     {
                         var value = r[item.Name];
-                        
+                        if (value == null) continue;
                         if (item.PropertyType.IsEnum)
-                            item.SetValue(t, Enum.Parse(item.PropertyType, value.ToString()),null);
-                        else
-                            item.SetValue(t, value);
+                            item.SetValue(t, Enum.Parse(item.PropertyType, value.ToString()), null);
+
+                        else if (isNullableEnum(item.PropertyType))
+                        {
+                            item.SetValue(t, Enum.Parse(Nullable.GetUnderlyingType(item.PropertyType), value.ToString()));
+                        }
+                        else item.SetValue(t, value);
                     }
                     catch { }
                 }
@@ -155,7 +161,13 @@ namespace MicroORM
             if (!r.IsClosed) r.Close();
             return list;
         }
-
+        bool isNullableEnum(Type t)
+        {
+            if (Nullable.GetUnderlyingType(t) != null)
+                if (Nullable.GetUnderlyingType(t).IsEnum)
+                    return true;
+            return false;
+        }
         protected T GetFist<T>(DbDataReader r) where T : class, new()
         {
             if (r == null) return null;
@@ -172,6 +184,11 @@ namespace MicroORM
                         var value = r[item.Name];
                         if (item.PropertyType.IsEnum)
                             item.SetValue(t, Enum.Parse(item.PropertyType, value.ToString()), null);
+
+                        else if (isNullableEnum(item.PropertyType))
+                        {
+                            item.SetValue(t, Enum.Parse(Nullable.GetUnderlyingType(item.PropertyType), value.ToString()));
+                        }
                         else item.SetValue(t, value);
                     }
                     catch { }

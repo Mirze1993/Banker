@@ -1,0 +1,45 @@
+﻿@model Ins_BiznesOverdraft
+@{
+    ViewData["Title"] = "Step2";
+    Layout = "~/Views/Shared/_ProsessLayout.cshtml";
+    var list = Model.FileNames.Split("*");
+}
+
+
+<div class="container-fluid">
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Prosess Info</h3>
+        </div>
+        <div class="card-body">
+            <div class="row border border-info">
+                <div class="col-sm-6">
+                    Initiator: @Model.InitiatorName <br />
+                    Responsible: @Model.ResponsibleName<br />
+                </div>
+                <div class="col-sm-6">
+                    Startable Date: @Model.StartDate
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Prosess</h3>
+        </div>
+        <div class="card-body">
+            @foreach (var item in list)
+            {
+            <a asp-action="Download"
+               asp-route-filename="@item">
+                @item
+            </a><br />
+            }
+        </div>
+
+
+    </div>
+</div>
+
+

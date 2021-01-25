@@ -30,7 +30,6 @@ namespace Banker.Controllers
         public IActionResult Login()
         {
             if (User.Identity.IsAuthenticated) return RedirectToAction("Index");
-
             return View();
         }
 
@@ -39,7 +38,7 @@ namespace Banker.Controllers
         {
 
             if (!ModelState.IsValid) return View(model);
-            LoginResponse result=new LoginResponse();
+            AppUserResponse result=new AppUserResponse();
             using (var httpClient = new HttpClient())
             {
                 StringContent content = new StringContent(
@@ -50,7 +49,7 @@ namespace Banker.Controllers
                 using (var response = await httpClient.PostAsync(ServiceURL.GetURL(Config)+"Home/Login", content))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
-                     result = JsonConvert.DeserializeObject<LoginResponse>(apiResponse);
+                     result = JsonConvert.DeserializeObject<AppUserResponse>(apiResponse);
                 }
             }
 
@@ -80,19 +79,6 @@ namespace Banker.Controllers
 
             await HttpContext.SignInAsync(principial, prop);
             return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public IActionResult Register()
-        {
-            if (User.Identity.IsAuthenticated) return RedirectToAction("Index");
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Register(Register model)
-        {
-            return View();
         }
 
         [HttpGet]

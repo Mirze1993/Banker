@@ -13,11 +13,12 @@ namespace Models.Inistances
         public int ResponsibleId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; }       
+        public string Log { get; set; }
 
-        [DbMaping(DbMap.noMaping)]
+        [DbMaping(DbMap.JoinColumn)]
         public string InitiatorName { get; set; }
-        [DbMaping(DbMap.noMaping)]
+        [DbMaping(DbMap.JoinColumn)]
         public string ResponsibleName { get; set; }
     }
 
@@ -25,6 +26,5 @@ namespace Models.Inistances
     {
         public static string Active = "Active";
         public static string Deactive = "Deactive";
-
     }
 }

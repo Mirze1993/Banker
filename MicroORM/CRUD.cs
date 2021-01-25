@@ -8,20 +8,22 @@ namespace MicroORM
 {
     public abstract class CRUD<T> : ICRUD<T> where T : class, new()
     {
-        IQuery<T> query;
+        IQuery query;
         public DBContext DBContext { get; set; }
 
         public CRUD()
         {
             this.DBContext = new DBContext();
-            query = DBContext.CreateQuary<T>();
-
+            query = DBContext.CreateQuary();
         }
 
-
-        public virtual (int,bool) Insert(T t,DbTransaction transaction=null)
+        public virtual (int, bool) Insert(T t, DbTransaction transaction = null)
         {
-            string cmtext = query.Insert();
+            return Insert<T>(t, transaction);
+        }
+        public virtual (int,bool) Insert<M>(M t,DbTransaction transaction=null) where M : class, new()
+        {
+            string cmtext = query.Insert<M>();
 
             using (CommanderBase commander = DBContext.CreateCommander())
             {
@@ -34,83 +36,128 @@ namespace MicroORM
             }
         }
 
+
         public virtual bool Delet(int id)
         {
-            string cmtext = query.Delete(id.ToString());
+            return Delet<T>(id);
+        }
+        public virtual bool Delet<M>(int id) where M : class, new()
+        {
+            string cmtext = query.Delete<M>(id.ToString());
             using CommanderBase commander = DBContext.CreateCommander();
             return commander.NonQuery(cmtext);
         }
 
         public virtual (List<T>,bool) GetByColumName(string columName, object value)
         {
-            string cmtext = query.GetByColumName(columName);
+            return GetByColumName<T>(columName, value);
+        }
+        public virtual (List<M>, bool) GetByColumName<M>(string columName, object value)where M:class,new()
+        {
+            string cmtext = query.GetByColumName<M>(columName);
             using (CommanderBase commander = DBContext.CreateCommander())
             {
-                return commander.Reader<T>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value) });
+                return commander.Reader<M>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value) });
             }
 
         }
+
 
         public virtual (T,bool) GetByColumNameFist(string columName, object value)
         {
-            string cmtext = query.GetByColumName(columName);
+            return GetByColumNameFist<T>(columName, value);
+        }        
+        public virtual (M, bool) GetByColumNameFist<M>(string columName, object value) where M:class,new()
+        {
+            string cmtext = query.GetByColumName<M>(columName);
             using (CommanderBase commander = DBContext.CreateCommander())
             {
-                return commander.ReaderFist<T>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value) });
+                return commander.ReaderFist<M>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value) });
             }
-
         }
 
-        public virtual (List<T>, bool) GetAll(params string[] column)
+
+        public virtual (List<T>, bool) GetAll(string[] column=null)
         {
-            string cmtext = query.GetAll(column);
-            using (CommanderBase commander = DBContext.CreateCommander())
-                return commander.Reader<T>(cmtext);
+            return GetAll<T>(column);
         }
+        public virtual (List<M>, bool) GetAll<M>(string[] column=null) where M : class, new()
+        {
+            string cmtext = query.GetAll<M>(column);
+            using (CommanderBase commander = DBContext.CreateCommander())
+                return commander.Reader<M>(cmtext);
+        }
+
 
         public virtual bool Update(T t, int id)
         {
-            string cmtext = query.Update(id.ToString());
+            return Update<T>(t, id);
+        }
+        public virtual bool Update<M>(M t, int id) where M : class, new()
+        {
+            string cmtext = query.Update<M>(id.ToString());
             using (CommanderBase commander = DBContext.CreateCommander())
                 return commander.NonQuery(cmtext, commander.SetParametrs(t));
         }
 
-        public virtual (int,bool) RowCount()
+
+        public virtual bool Update(string[] columns, object[] values, int id)
         {
-            string cmtext = query.RowCount();
+            return Update<T>(columns, values, id);
+        }
+        public virtual bool Update<M>(string[] columns,object[] values,  int id) where M : class, new()
+        {
+            string cmtext = query.Update<M>(id.ToString(),columns);
+            var p = new List<DbParameter>();
             using (CommanderBase commander = DBContext.CreateCommander())
             {
-                var (o,b) = commander.Scaller(cmtext);
-                if (b && o != null) return (Convert.ToInt32(o), b);
-                else return (0, b);
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    p.Add(commander.SetParametr(columns[i], values[i]));
+                }
+                return commander.NonQuery(cmtext, p);
             }
         }
 
-        public virtual (int, bool) RowCountWithSrc(string srcClm, string srcValue)
-        {
-            string cmtext = query.RowCountWithSrc(srcClm);
-            using (CommanderBase commander = DBContext.CreateCommander())
-            {
-                var (o,b) = commander.Scaller(cmtext, new List<DbParameter>() { commander.SetParametr(srcClm, srcValue) });
+        #region elave
+        //public virtual (int,bool) RowCount()
+        //{
+        //    string cmtext = query.RowCount();
+        //    using (CommanderBase commander = DBContext.CreateCommander())
+        //    {
+        //        var (o,b) = commander.Scaller(cmtext);
+        //        if (b && o != null) return (Convert.ToInt32(o), b);
+        //        else return (0, b);
+        //    }
+        //}
 
-                if (b && o != null) return (Convert.ToInt32(o), b);
-                else return (0, b);
-            }
-        }
+        //public virtual (int, bool) RowCountWithSrc(string srcClm, string srcValue)
+        //{
+        //    string cmtext = query.RowCountWithSrc(srcClm);
+        //    using (CommanderBase commander = DBContext.CreateCommander())
+        //    {
+        //        var (o,b) = commander.Scaller(cmtext, new List<DbParameter>() { commander.SetParametr(srcClm, srcValue) });
 
-        public virtual (List<T>,bool) GetFromTo(int from, int to)
-        {
-            string cmtext = query.getFromTo(from, to);
-            using (CommanderBase commander = DBContext.CreateCommander())
-                return commander.Reader<T>(cmtext);
-        }
+        //        if (b && o != null) return (Convert.ToInt32(o), b);
+        //        else return (0, b);
+        //    }
+        //}
 
-        public virtual (List<T>, bool) GetFromToWithSrc(int from, int to, string srcClm, string srcValue)
-        {
-            string cmtext = query.getFromToWithSrc(from, to, srcClm);
-            using (CommanderBase commander = DBContext.CreateCommander())
-                return commander.Reader<T>(cmtext, new List<DbParameter> { commander.SetParametr(srcClm, srcValue) });
-        }
+        //public virtual (List<T>,bool) GetFromTo(int from, int to)
+        //{
+        //    string cmtext = query.getFromTo(from, to);
+        //    using (CommanderBase commander = DBContext.CreateCommander())
+        //        return commander.Reader<T>(cmtext);
+        //}
+
+        //public virtual (List<T>, bool) GetFromToWithSrc(int from, int to, string srcClm, string srcValue)
+        //{
+        //    string cmtext = query.getFromToWithSrc(from, to, srcClm);
+        //    using (CommanderBase commander = DBContext.CreateCommander())
+        //        return commander.Reader<T>(cmtext, new List<DbParameter> { commander.SetParametr(srcClm, srcValue) });
+        //}
+
+        #endregion
 
     }
 }

@@ -1,5 +1,5 @@
 ﻿using MicroORM.Interface;
-using MicroORM.SqlQuery;
+using MicroORM.SqlQueries;
 
 namespace MicroORM
 {
@@ -23,16 +23,16 @@ namespace MicroORM
             return commander;
         }
 
-        public  IQuery<T> CreateQuary<T>()
+        public  IQuery CreateQuary()
         {
-            IQuery<T> query = null;
+            IQuery query = null;
             switch (ORMConfig.DbType)
             {
                 case DbType.MSSQL:
-                    query = new SqlQuery<T>();
+                    query = new SqlQuery();
                     break;
                 case DbType.Oracle:
-                    query = new SqlQuery<T>();
+                    query = new SqlQuery();
                     break;
                 default:
                     break;

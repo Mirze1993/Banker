@@ -36,13 +36,14 @@ namespace MicroORM.Logging
 
         public void WriteFile(string text, LogLevel logLevel)
         {
-            if (IsEnabled(logLevel)) return;
+            if (!IsEnabled(logLevel)) return;
             string logText = $"{logLevel.ToString().PadRight(12)} {DateTime.Now.ToString("u").PadRight(24)}   {text}";
             string path = Path.Combine(FileLoggerOptions.FolderPath, DateTime.Now.ToString("yyyy-MM-dd")) + ".txt";
 
             FileInfo fi = new FileInfo(path);
-            if (fi.Length > FileLoggerOptions.MaxFileCount)
-                path = Path.Combine(FileLoggerOptions.FolderPath, DateTime.Now.ToString("yyyy-MM-dd HH-mm")) + ".txt";
+            if (fi.Exists)
+                if (fi.Length > (1024 * 1024 * FileLoggerOptions.MaxFileCount))
+                    path = Path.Combine(FileLoggerOptions.FolderPath, DateTime.Now.ToString("yyyy-MM-dd HH-mm")) + ".txt";
 
             using var fs = File.Open(path, FileMode.Append);
             using var sr = new StreamWriter(fs);

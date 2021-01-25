@@ -8,7 +8,7 @@ namespace Models.Inistances
     {
         public int Id { get; set; }
         public int Ins_BiznesOverdraftId { get; set; }
-        public double Amount { get; set; }
-        public DateTime Date { get; set; }
+        public double? Amount { get; set; }
+        public string Date { get; set; }
     }
 }
