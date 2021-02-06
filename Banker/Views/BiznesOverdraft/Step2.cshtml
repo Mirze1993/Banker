@@ -37,6 +37,12 @@
             </a><br />
             }
         </div>
+        <div class="card-footer">
+            <form method="post">
+                    <button asp-action="Step2End" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" type="submit" class="btn btn-primary">Tesdiqe gonder</button>
+                    <button asp-action="Stop" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" type="submit" class="btn btn-danger">Prosesi dayandır</button>
+            </form>
+        </div>
 
 
     </div>

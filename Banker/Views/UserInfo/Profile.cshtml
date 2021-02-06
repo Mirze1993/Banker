@@ -1,8 +1,30 @@
-﻿
+﻿@model Banker.UIModel.UIAppUser
 @{
     ViewData["Title"] = "Profile";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Profile</h1>
-
+<div class="container-fluid">
+    <div class="card card-primary">
+        <div class="card-header">
+            Info
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    Name: @Model.Name <br />
+                    Mail: @Model.Email
+                </div>
+                <div class="col-sm-6">
+                    @if (Model.userClaims.Count > 0)
+                    {
+                        @foreach (var item in Model.userClaims)
+                        {
+                            <p>@item.Type : @item.Value </p><br />
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

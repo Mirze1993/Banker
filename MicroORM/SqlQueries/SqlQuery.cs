@@ -1,7 +1,7 @@
 ﻿using CommonTool;
 using MicroORM.Interface;
 using System;
-
+using System.Collections.Generic;
 
 namespace MicroORM.SqlQueries
 {
@@ -79,7 +79,7 @@ namespace MicroORM.SqlQueries
         {
             return $"SELECT * FROM {typeof(M).Name} WHERE {columName} =@{columName}";
         }
-
+        
         #region commet
         //public string getFromTo(int from, int to)
         //{

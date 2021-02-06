@@ -30,8 +30,8 @@ namespace WebApplication1.Controllers
         public IConfiguration Config { get; }
 
         [Authorize()]
-        [Route("GetUserById")]
-        [HttpGet("{id}")]
+        [Route("GetUserById/{id}")]
+        [HttpGet()]
         [ProducesResponseType(typeof(AppUserResponse), 200)]
         public IActionResult GetUserById(int id)
         {

@@ -29,7 +29,7 @@
         <div class="card-header">
             <h3 class="card-title">Prosess</h3>
         </div>
-        <form asp- method="post">
+        <form method="post">
             <input type="hidden" asp-for="Id" />
             <div class="card-body">
                 <div class="row border border-primary">
@@ -116,7 +116,7 @@
             </div>
             <div class="card-footer">
                 <button asp-action="Step1End" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" type="submit" class="btn btn-primary">Növbəti</button>
-                <a asp-action="Stop" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" class="btn btn-danger">Prosesi dayandır</a>
+                <button asp-action="Stop" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" type="submit" class="btn btn-danger">Prosesi dayandır</button>
             </div>
         </form>
     </div>

@@ -33,6 +33,13 @@
             <ul class="navbar-nav ml-auto">
                 @if (User.Identity.IsAuthenticated)
                 {
+                    <li class="nav-item">
+                        <a class="nav-link"  asp-action="Info" asp-controller="ProsesInfo">
+                            <i class="far fa-bell"></i>
+                            <span class="badge badge-danger navbar-badge">1</span>
+                        </a>
+                    </li>
+
                     <li class="nav-item dropdown">
                         <a class="nav-link" data-toggle="dropdown" href="#">
                             <i class="far fa-user"></i>
@@ -41,7 +48,7 @@
                             <a href="#" class="dropdown-item">
                                 <!-- Message Start -->
                                 <div class="media">
-                                    <img src="~/tmpl/dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
+                                    <img src="~/tmpl/dist/img/avatar5.png" alt="User Avatar" class="img-size-50 mr-3 img-circle">
                                     <div class="media-body">
                                         <p class="dropdown-item">
                                             @User.Identity.Name
@@ -50,7 +57,11 @@
                                 </div>
                                 <!-- Message End -->
                             </a>
-                            <a asp-action="Logout" class="dropdown-item">
+                            <a asp-action="Profile" asp-controller="UserInfo" class="dropdown-item">
+                                <i class="far fa-sign-out-alt"></i>
+                                <p>Profil</p>
+                            </a>
+                            <a asp-action="Logout" asp-controller="Home" class="dropdown-item">
                                 <i class="far fa-sign-out-alt"></i>
                                 <p>Çıxış</p>
                             </a>
@@ -114,7 +125,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-acquisitions-incorporated"></i>
+                                <i class="nav-icon fas fa-handshake-alt-slash"></i>
                                 <p>
                                     Hüquqi şəxs <i class="right fas fa-angle-left"></i>
                                 </p>
@@ -138,7 +149,7 @@
             @RenderBody()
         </div>
         <div class="modal fade" id="modal-biznesoverdaft">
-            <form method="post" asp-controller="BiznesOverdraft" asp-action="Step1">
+            <form method="post" asp-controller="BiznesOverdraft" asp-action="Start">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
