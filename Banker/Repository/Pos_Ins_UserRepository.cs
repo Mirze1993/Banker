@@ -20,7 +20,6 @@ namespace Banker.Repository
             }
             using (var commander=DBContext.CreateCommander())            
                 return commander.Reader<Pos_Ins_User>(query).Item1;
-            
         }
     }
 }

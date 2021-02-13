@@ -2,105 +2,90 @@
     @{
         ViewData["Title"] = "Step3";
         Layout = "~/Views/Shared/_ProsessLayout.cshtml";
-        var branchess = (List<SelectListItem>)ViewBag.Branchs;
+        var branchess = Banker.Tools.CreateSelectListItems.ObjectToSelectList<Models.ProsessObjects.BaseObject>();
         var list = Model.FileNames.Split("*");
     }
 
-    <div class="container-fluid">
-        <div class="card card-primary">
-            <div class="card-header">
-                <h3 class="card-title">Prosess Info</h3>
-            </div>
+<div class="container-fluid">
+    <a target="_blank" asp-controller="BiznesOverdraft" asp-action="Info" asp-route-id="@Model.Id">Proses info</a>
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Prosess</h3>
+        </div>
+        <form asp- method="post">
+            <input type="hidden" asp-for="Id" />
+
             <div class="card-body">
-                <div class="row border border-info">
+                <div class="row border border-primary">
                     <div class="col-sm-6">
-                        Initiator: @Model.InitiatorName <br />
-                        Responsible: @Model.ResponsibleName<br />
-                    </div>
-                    <div class="col-sm-6">
-                        Startable Date: @Model.StartDate
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <div class="card card-primary">
-            <div class="card-header">
-                <h3 class="card-title">Prosess</h3>
-            </div>
-            <form asp- method="post">
-                <input type="hidden" asp-for="Id" />
-                <div class="card-body">
-                    <div class="row border border-primary">
-                        <div class="col-sm-6">
-                            <div class="form-group row">
-                                <label asp-for="Name" class="col-sm-3 col-form-label"></label>
-                                <div class="col-sm-9">
-                                    <input asp-for="Name" class="form-control" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label asp-for="Cif" class="col-sm-3 col-form-label"></label>
-                                <div class="col-sm-9">
-                                    <input asp-for="Cif" class="form-control" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label asp-for="Voen" class="col-sm-3 col-form-label"></label>
-                                <div class="col-sm-9">
-                                    <input asp-for="Voen" class="form-control" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label asp-for="BranchId" class="col-sm-3 col-form-label">Branch</label>
-                                <div class="col-sm-9">
-                                    <select asp-for="BranchId" asp-items="branchess"></select>
-                                </div>
+                        <div class="form-group row">
+                            <label asp-for="Name" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Name" class="form-control" />
                             </div>
                         </div>
-                        <div class="col-sm-6">
-                            <div class="form-group row">
-                                <label asp-for="Amount" class="col-sm-3 col-form-label"></label>
-                                <div class="col-sm-9">
-                                    <input asp-for="Amount" class="form-control" />
-                                </div>
+                        <div class="form-group row">
+                            <label asp-for="Cif" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Cif" class="form-control" />
                             </div>
-                            <div class="form-group row">
-                                <label asp-for="Rate" class="col-sm-3 col-form-label"></label>
-                                <div class="col-sm-9">
-                                    <input asp-for="Rate" class="form-control" />
-                                </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="Voen" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Voen" class="form-control" />
                             </div>
-                            <div class="form-group row">
-                                <label asp-for="Aylar" class="col-sm-3 col-form-label"></label>
-                                <div class="col-sm-9">
-                                    <select asp-for="Aylar" asp-items="Html.GetEnumSelectList<Ins_BiznesOverdraft_Enum_Aylar>()"></select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label asp-for="DovruyyeNovu" class="col-sm-3 col-form-label"></label>
-                                <div class="col-sm-9">
-                                    <select asp-for="DovruyyeNovu" asp-items="Html.GetEnumSelectList<Ins_BiznesOverdraft_Enum_DovruyyeNovu>()"></select>
-                                </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="BranchId" class="col-sm-3 col-form-label">Branch</label>
+                            <div class="col-sm-9">
+                                <select asp-for="BranchId" asp-items="branchess"></select>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        @foreach (var item in list)
-                        {
-                            <a asp-action="Download"
-                               asp-route-filename="@item">
-                                @item
-                            </a><br />
-                        }
+                    <div class="col-sm-6">
+                        <div class="form-group row">
+                            <label asp-for="Amount" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Amount" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="Rate" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Rate" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="Aylar" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <select asp-for="Aylar" asp-items="Html.GetEnumSelectList<Ins_BiznesOverdraft_Enum_Aylar>()"></select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="DovruyyeNovu" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <select asp-for="DovruyyeNovu" asp-items="Html.GetEnumSelectList<Ins_BiznesOverdraft_Enum_DovruyyeNovu>()"></select>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                <div class="row">
+                    @foreach (var item in list)
+                    {
+                        <a asp-action="Download"
+                           asp-route-filename="@item">
+                            @item
+                        </a><br />
+                    }
+                </div>
 
-                </div>
-                <div class="card-footer">
-                    @*<button asp-action="Step1End" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" type="submit" class="btn btn-primary">Növbəti</button>*@
-                    <button asp-action="Stop" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" type="submit" class="btn btn-danger">Prosesi dayandır</button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="card-footer">
+                <button asp-action="Step3End" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" type="submit" class="btn btn-primary">Tesdiq et</button>
+                <button asp-action="Stop" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" type="submit" class="btn btn-danger">Prosesi dayandır</button>
+            </div>
+        </form>
     </div>
+</div>
 

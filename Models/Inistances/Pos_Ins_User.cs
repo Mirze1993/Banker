@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonTool;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,5 +13,6 @@ namespace Models.Inistances
         public int UserId { get; set; }
         public string PosesName { get; set; }
         public string Step { get; set; }
+        public string InsName { get; set; }
     }
 }

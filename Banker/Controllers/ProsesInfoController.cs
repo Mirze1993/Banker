@@ -41,5 +41,16 @@ namespace Banker.Controllers
             var (p, bb) = rep.GetByColumNameFist("Id", id);
             return RedirectToAction(p.Step, p.PosesName,new {id=p.ProsessId});
         }
+
+
+        public IActionResult ProsessReport()
+        {
+            return View();
+        }
+
+        public IActionResult SearchIns(UIReprotProsess model)
+        {
+            return View("ProsessReport");
+        }
     }
 }

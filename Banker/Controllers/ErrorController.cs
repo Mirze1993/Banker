@@ -15,9 +15,14 @@ namespace Banker.Controllers
         [Route("/Error")]
         public IActionResult Error(int statusCode)
         {
-            if (statusCode == (int)HttpStatusCode.Unauthorized)
-                ViewBag.Message = "NoAccess";
+            ViewBag.Message = statusCode;
             return View();
+        }
+
+        [Route("/Account/AccessDenied")]
+        public IActionResult AccessDenied()
+        {
+           return View();
         }
 
         [Route("/Exception")]

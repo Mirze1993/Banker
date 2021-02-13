@@ -1,5 +1,5 @@
 ﻿using AspNetCore.Reporting;
-using Banker.ObjectsSelectListItem;
+using Banker.Tools;
 using Banker.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -22,9 +22,9 @@ namespace Banker.Controllers
         {
             Environment = environment;
             Repository = new Ins_BiznesOverdraftReposotory();
-            
+
         }
-        
+
 
         public IWebHostEnvironment Environment { get; }
         public Ins_BiznesOverdraftReposotory Repository { get; }
@@ -35,15 +35,13 @@ namespace Banker.Controllers
         {
             #region CreateInstance
             var inistance = new Ins_BiznesOverdraft
-            {
-                InitiatorName = User.Identity.Name,
-                InitiatorId = Convert.ToInt32(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0"),
-                ResponsibleName = User.Identity.Name,
-                ResponsibleId = Convert.ToInt32(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0"),
+            {                
+                InitiatorId = getUserId(),
+                ResponsibleId = getUserId(),
                 StartDate = DateTime.Now,
                 Status = ProcessStatus.Active,
             };
-            #region addMounrs
+            #region addMounrs inistance.DovruyeList
             var e = Enumerable.Range(0, 6).Select(x => DateTime.Now.AddMonths(x - 6).ToString("dd-MM-yyyy")).ToList();
             e.ForEach(x => inistance.Dovruyeler.Add(new Ins_BiznesOverdraft_DovrueList { Date = x }));
             inistance.DovruyelerJson = JsonConvert.SerializeObject(inistance.Dovruyeler);
@@ -51,16 +49,14 @@ namespace Banker.Controllers
             var (id, b) = Repository.Insert(inistance);
             if (b!) RedirectToAction("Index", "Home");
             #endregion
-           
-            #region assingcreate
-            int userId = 0;
-            Int32.TryParse(User.Claims.First(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value, out userId);
+
+            #region assingcreate            
             Repository.Insert(new Pos_Ins_User
             {
                 PosesName = "BiznesOverdraft",
                 ProsessId = id,
                 Step = "Step1",
-                UserId=userId
+                UserId = getUserId()
             });
             #endregion
             return Step1(id);
@@ -69,15 +65,9 @@ namespace Banker.Controllers
         [Authorize(Roles = "Kad")]
         public IActionResult Step1(int id)
         {
-            #region getIns
-            var model = Repository.GetByIdJoinUsers(id);
-            model.Dovruyeler = JsonConvert.DeserializeObject< List<Ins_BiznesOverdraft_DovrueList>>(model.DovruyelerJson);
-            #endregion
-            #region getBranch
-            var branchs = Repository.GetAll<Branch>().Item1;
-            ViewBag.Branchs = CreateSelectListItems.GetSelectListItems(branchs);
-            #endregion
-            return View("Step1",model);
+            var model = Repository.GetById(id);
+
+            return View("Step1", model);
         }
 
         [HttpPost]
@@ -100,17 +90,19 @@ namespace Banker.Controllers
             }
             #endregion
             #region UpdateIns
-            string dovryeJson = "";
-            if (dovrueLists?.Count > 0) dovryeJson = Newtonsoft.Json.JsonConvert.SerializeObject(dovrueLists);
-            string[] names = { "Name", "Rate", "Voen", "Amount", "Aylar", "BranchId", "Cif", "DovruyyeNovu", "DovruyelerJson", "FileNames" };
+            string dovryeJson =  JsonConvert.SerializeObject(dovrueLists);
+            string[] names = { "Name", "Rate", "Voen", "Amount",
+                "Aylar", "BranchId", "Cif", "DovruyyeNovu", "DovruyelerJson", "FileNames" };
             object[] valuse = { model.Name,model.Rate,model.Voen,model.Amount,model.Aylar,
                 model.BranchId,model.Cif,model.DovruyyeNovu,dovryeJson,filename };
             var b = Repository.Update(names, valuse, id);
             #endregion
 
             #region UpdateAssing
-            var posInsId = Repository.GetByColumNameFist<Pos_Ins_User>("ProsessId", id).Item1.Id;
-            Repository.Update<Pos_Ins_User>(new string[]{ "Step" }, new object[] { "Step2" },posInsId);
+            Repository.Update<Pos_Ins_User>(
+                new string[] { "Step", "InsName" }
+                , new object[] { "Step2", $"BiznesOverdarft/{model.Name}/{model.Cif}" }
+                , Repository.GetPosInsId(id));
             #endregion
             return Step2(id);
         }
@@ -118,7 +110,7 @@ namespace Banker.Controllers
         [Authorize(Roles = "Kad")]
         public IActionResult Step2(int id)
         {
-            var model = Repository.GetByIdJoinUsers(id);
+            var model = Repository.GetById(id);
             return View("Step2", model);
         }
 
@@ -126,9 +118,8 @@ namespace Banker.Controllers
         [Authorize(Roles = "Kad")]
         public IActionResult Step2End(int id)
         {
-            #region UpdateAssing
-            var posInsId = Repository.GetByColumNameFist<Pos_Ins_User>("ProsessId", id).Item1.Id;
-            Repository.Update<Pos_Ins_User>(new string[] { "Step","Role","UserId" }, new object[] { "Step3", "HeadOfKad",0 }, posInsId);
+            #region UpdateAssing           
+            Repository.Update<Pos_Ins_User>(new string[] { "Step", "Role", "UserId" }, new object[] { "Step3", "HeadOfKad", 0 }, Repository.GetPosInsId(id));
             #endregion
 
             return RedirectToAction("Index", "Home");
@@ -137,28 +128,36 @@ namespace Banker.Controllers
 
         [Authorize(Roles = "HeadOfKad")]
         public IActionResult Step3(int id)
-        {
-            #region getBranch
-            var (branchs, bbr) = Repository.GetAll<Branch>();
-            ViewBag.Branchs = CreateSelectListItems.GetSelectListItems(branchs);
-            #endregion
-            #region update Inst
-            int userId = 0;
-            Int32.TryParse(User.Claims.First(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value, out userId);
-            var b = Repository.Update(new string[] { "ResponsibleId" }, new object[] { userId }, id);
-            #endregion
-            var model = Repository.GetByIdJoinUsers(id);
+        {            
+            var model = Repository.GetById(id);
             return View(model);
         }
 
+        [HttpPost]
+        [Authorize(Roles = "HeadOfKad")]
+        public IActionResult Step3End(int id)
+        {
+            #region update Inst
+            var b = Repository.Update(new string[] { "ResponsibleId" }, new object[] { getUserId() }, id);
+            #endregion
+            return Stop(id);
+        }
+
+        [Authorize]
+        public IActionResult Info(int id)
+        {
+            var model = Repository.GetById(id);
+            return View(model);
+        }
 
 
         [HttpPost]
         public IActionResult Stop(int id)
         {
-            string[] a = { "Status", "EndDate" };
-            object[] o = { ProcessStatus.Deactive, DateTime.Now };
-            var b = Repository.Update(a, o, id);
+            string[] names = { "Status", "EndDate" };
+            object[] values = { ProcessStatus.Deactive, DateTime.Now };
+            var b = Repository.Update(names, values, id);
+            Repository.Delet<Pos_Ins_User>(Repository.GetPosInsId(id));
             return RedirectToAction("Index", "Home");
         }
 
@@ -176,6 +175,11 @@ namespace Banker.Controllers
             return File(ms, "application/pdf", filename);
         }
 
-
+        int getUserId()
+        {
+            int userId = 0;
+            Int32.TryParse(User.Claims.First(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value, out userId);
+            return userId;
+        }
     }
 }

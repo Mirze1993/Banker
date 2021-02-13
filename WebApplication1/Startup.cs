@@ -90,7 +90,7 @@ namespace WebApplication1
                 #region config MicroORM
                 MicroORM.ORMConfig.ConnectionString = Config.GetConnectionString("DefaultConnection");
                 MicroORM.ORMConfig.DbType = MicroORM.DbType.MSSQL;
-                //MicroORM.Logging.FileLoggerOptions.FolderPath = System.IO.Path.Combine(this.Environment.WebRootPath, "Log");
+                MicroORM.Logging.FileLoggerOptions.FolderPath = System.IO.Path.Combine(this.Environment.ContentRootPath, "Log");
                 #endregion
 
             });

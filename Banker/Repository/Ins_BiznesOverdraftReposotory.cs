@@ -9,20 +9,26 @@ namespace Banker.Repository
 {
     public class Ins_BiznesOverdraftReposotory : CRUD<Ins_BiznesOverdraft>
     {
-        public Ins_BiznesOverdraft GetByIdJoinUsers(int id)
+        public Ins_BiznesOverdraft GetById(int id)
         {
-            using (var commander = DBContext.CreateCommander())
+            var (t, b) = base.GetByColumNameFist("Id", id);
+            if (t.BranchId > 0)
+                t.Branch = base.GetByColumNameFist<Models.ProsessObjects.Branch>("Id", t.BranchId).Item1;
+            if (!string.IsNullOrEmpty(t.DovruyelerJson)) t.Dovruyeler = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Ins_BiznesOverdraft_DovrueList>>(t.DovruyelerJson);
+            if (!string.IsNullOrEmpty(t.DovruyelerJson)) t.Dovruyeler = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Ins_BiznesOverdraft_DovrueList>>(t.DovruyelerJson);
+            return t;
+
+        }
+
+        public int GetPosInsId(int prosessId)
+        {
+            var id = 0;
+            using (var comander=DBContext.CreateCommander())
             {
-                var (t,b) = commander.ReaderFist<Ins_BiznesOverdraft>(
-                    commandText: "SelectIns_BiznesOverdraftById",
-                    parameters: new List<System.Data.Common.DbParameter>() { commander.SetParametr("Id", id) },
-                    commandType: System.Data.CommandType.StoredProcedure
-                    );
-                if (t.BranchId > 0)
-                    t.Branch = base.GetByColumNameFist<Models.ProsessObjects.Branch>("Id", t.BranchId).Item1;
-                if (!string.IsNullOrEmpty(t.DovruyelerJson)) t.Dovruyeler = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Ins_BiznesOverdraft_DovrueList>>(t.DovruyelerJson);
-                return t;                
-            }            
+                var (i,b)=comander.Scaller(commandText: $"Select Id from Pos_Ins_User where ProsessId={prosessId}");
+                if (b) id= Convert.ToInt32(i);
+                return int.Parse(id.ToString());
+            }
         }
 
     }

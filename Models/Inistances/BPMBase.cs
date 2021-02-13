@@ -15,16 +15,11 @@ namespace Models.Inistances
         public DateTime? EndDate { get; set; }
         public string Status { get; set; }       
         public string Log { get; set; }
-
-        [DbMaping(DbMap.JoinColumn)]
-        public string InitiatorName { get; set; }
-        [DbMaping(DbMap.JoinColumn)]
-        public string ResponsibleName { get; set; }
     }
 
     public static class ProcessStatus
     {
-        public static string Active = "Active";
-        public static string Deactive = "Deactive";
+        public static string Active { get; set; } = "Active";
+        public static string Deactive { get; set; } = "Deactive";
     }
 }

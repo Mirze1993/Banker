@@ -1,0 +1,90 @@
+﻿@model Banker.UIModel.UIReprotProsess
+@{
+    ViewData["Title"] = "ProsessReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var prosesNames = Banker.Tools.CreateSelectListItems.GetSelectListItems(Banker.StaticObj.AllProsess.Prosess);
+    var prStatuss = Banker.Tools.CreateSelectListItems.PropToToSelectListItems(typeof(Models.Inistances.ProcessStatus));
+    var users = Banker.Tools.CreateSelectListItems.UserToSelectList();
+}
+
+@section CSS{
+    <link href="~/tmpl/dist/css/select2-bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/tmpl/dist/css/select2.min.css" rel="stylesheet" />
+}
+
+<div class="container-fluid">
+    <div class="card card-primary">
+        <div class="card-header">
+            Proses Info
+        </div>
+        <form method="post">
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-sm-6">
+                        <div class="form-group row">
+                            <label asp-for="ProsesName" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <select asp-for="ProsesName" asp-items="prosesNames" class="form-control">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="StartDate" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="StartDate" type="date" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="EndDate" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="EndDate" type="date" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group row">
+                            <label asp-for="Status" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <select asp-for="Status" asp-items="prStatuss" class="form-control">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="InitiatorId" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <select asp-for="InitiatorId" asp-items="users" class="form-control select2bs4">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="ResponsibleId" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <select asp-for="ResponsibleId" asp-items="users" class="form-control select2bs4">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="card-footer">
+                <button asp-action="SearchIns" asp-controller="ProsesInfo" type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Script{
+    <script src="~/tmpl/dist/js/select2.full.min.js"></script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            });
+        })
+    </script>
+}

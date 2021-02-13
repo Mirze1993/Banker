@@ -7,26 +7,11 @@
 
 
 <div class="container-fluid">
-    <div class="card card-primary">
-        <div class="card-header">
-            <h3 class="card-title">Prosess Info</h3>
-        </div>
-        <div class="card-body">
-            <div class="row border border-info">
-                <div class="col-sm-6">
-                    Initiator: @Model.InitiatorName <br />
-                    Responsible: @Model.ResponsibleName<br />
-                </div>
-                <div class="col-sm-6">
-                    Startable Date: @Model.StartDate
-                </div>
-            </div>
-        </div>
-
-    </div>
+   
     <div class="card card-primary">
         <div class="card-header">
             <h3 class="card-title">Prosess</h3>
+            <a target="_blank" asp-controller="BiznesOverdraft" asp-action="Info" asp-route-id="@Model.Id">Proses info</a>
         </div>
         <div class="card-body">
             @foreach (var item in list)
@@ -39,6 +24,7 @@
         </div>
         <div class="card-footer">
             <form method="post">
+                
                     <button asp-action="Step2End" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" type="submit" class="btn btn-primary">Tesdiqe gonder</button>
                     <button asp-action="Stop" asp-route-id="@Model.Id" asp-controller="BiznesOverdraft" type="submit" class="btn btn-danger">Prosesi dayandır</button>
             </form>

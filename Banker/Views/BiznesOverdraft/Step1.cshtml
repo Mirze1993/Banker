@@ -2,35 +2,20 @@
 @{
     ViewData["Title"] = "Step1";
     Layout = "~/Views/Shared/_ProsessLayout.cshtml";
-    var branchess = (List<SelectListItem>)ViewBag.Branchs;
     int count = 0;
+    var branchess = Banker.Tools.CreateSelectListItems.ObjectToSelectList<Models.ProsessObjects.BaseObject>();
 }
 
 
 <div class="container-fluid">
-    <div class="card card-primary">
-        <div class="card-header">
-            <h3 class="card-title">Prosess Info</h3>
-        </div>
-        <div class="card-body">
-            <div class="row border border-info">
-                <div class="col-sm-6">
-                    Initiator: @Model.InitiatorName <br />
-                    Responsible: @Model.ResponsibleName<br />
-                </div>
-                <div class="col-sm-6">
-                    Startable Date: @Model.StartDate
-                </div>
-            </div>
-        </div>
 
-    </div>
+    <a target="_blank" asp-controller="BiznesOverdraft" asp-action="Info" asp-route-id="@Model.Id">Proses info</a>
     <div class="card card-primary">
         <div class="card-header">
             <h3 class="card-title">Prosess</h3>
         </div>
         <form method="post">
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Id" />            
             <div class="card-body">
                 <div class="row border border-primary">
                     <div class="col-sm-6">
@@ -100,11 +85,11 @@
                                 <tr>
                                     <td>
                                         <label>@item.Date</label>
-                                    <input type="hidden" name="[@count].Date" value="@item.Date"/>
+                                        <input type="hidden" name="[@count].Date" value="@item.Date" />
                                     </td>
                                     <td>
                                         <input name="[@count].Amount" />
-                                        <input type="hidden" name="[@count].Ins_BiznesOverdraftId" value="@item.Ins_BiznesOverdraftId"/>
+                                        <input type="hidden" name="[@count].Ins_BiznesOverdraftId" value="@item.Ins_BiznesOverdraftId" />
                                     </td>
                                 </tr>
                                 { count++; }

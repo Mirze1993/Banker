@@ -77,11 +77,11 @@ namespace MicroORM
         }
 
 
-        public virtual (List<T>, bool) GetAll(string[] column=null)
+        public virtual (List<T>, bool) GetAll(params string[] column)
         {
             return GetAll<T>(column);
         }
-        public virtual (List<M>, bool) GetAll<M>(string[] column=null) where M : class, new()
+        public virtual (List<M>, bool) GetAll<M>(params string[] column) where M : class, new()
         {
             string cmtext = query.GetAll<M>(column);
             using (CommanderBase commander = DBContext.CreateCommander())
