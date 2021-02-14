@@ -56,7 +56,8 @@ namespace Banker.Controllers
                 PosesName = "BiznesOverdraft",
                 ProsessId = id,
                 Step = "Step1",
-                UserId = getUserId()
+                UserId = getUserId(),
+                Active=true
             });
             #endregion
             return Step1(id);
@@ -121,7 +122,6 @@ namespace Banker.Controllers
             #region UpdateAssing           
             Repository.Update<Pos_Ins_User>(new string[] { "Step", "Role", "UserId" }, new object[] { "Step3", "HeadOfKad", 0 }, Repository.GetPosInsId(id));
             #endregion
-
             return RedirectToAction("Index", "Home");
         }
 
@@ -154,10 +154,14 @@ namespace Banker.Controllers
         [HttpPost]
         public IActionResult Stop(int id)
         {
+            #region update Inst
             string[] names = { "Status", "EndDate" };
             object[] values = { ProcessStatus.Deactive, DateTime.Now };
             var b = Repository.Update(names, values, id);
-            Repository.Delet<Pos_Ins_User>(Repository.GetPosInsId(id));
+            #endregion
+            #region update Assinge
+            Repository.Update<Pos_Ins_User>(new string[] { "Active" },new object[] { false},Repository.GetPosInsId(id));
+            #endregion
             return RedirectToAction("Index", "Home");
         }
 

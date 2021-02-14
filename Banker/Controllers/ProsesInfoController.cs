@@ -25,7 +25,7 @@ namespace Banker.Controllers
             var roles=User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Role).Select(x => x.Value).ToList();
             var model = new UIProsInfo();
 
-            model.AssingePosision= rep.getProsess(roles);
+            model.AssingePosision= rep.GetPosInsUser(roles);
             model.AssingeMe = rep.GetByColumName("UserID", userId).Item1;
             return View(model);
         }
@@ -50,7 +50,9 @@ namespace Banker.Controllers
 
         public IActionResult SearchIns(UIReprotProsess model)
         {
-            return View("ProsessReport");
+            if (string.IsNullOrEmpty(model.ProsesName)) return View("ProsessReport",model);
+            model.Response=rep.GetProsess(model);
+            return View("ProsessReport", model);
         }
     }
 }

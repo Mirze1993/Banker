@@ -12,6 +12,7 @@ namespace Banker.Repository
         public Ins_BiznesOverdraft GetById(int id)
         {
             var (t, b) = base.GetByColumNameFist("Id", id);
+            if (t == null) return null;
             if (t.BranchId > 0)
                 t.Branch = base.GetByColumNameFist<Models.ProsessObjects.Branch>("Id", t.BranchId).Item1;
             if (!string.IsNullOrEmpty(t.DovruyelerJson)) t.Dovruyeler = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Ins_BiznesOverdraft_DovrueList>>(t.DovruyelerJson);

@@ -14,5 +14,6 @@ namespace Models.Inistances
         public string PosesName { get; set; }
         public string Step { get; set; }
         public string InsName { get; set; }
+        public bool Active { get; set; }
     }
 }
