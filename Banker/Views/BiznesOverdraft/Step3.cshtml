@@ -2,7 +2,7 @@
     @{
         ViewData["Title"] = "Step3";
         Layout = "~/Views/Shared/_ProsessLayout.cshtml";
-        var branchess = Banker.Tools.CreateSelectListItems.ObjectToSelectList<Models.ProsessObjects.BaseObject>();
+        var branchess = Banker.Tools.CreateSelectListItems.ObjectToSelectList<Models.ProsessObjects.Branch>();
         var list = Model.FileNames.Split("*");
     }
 

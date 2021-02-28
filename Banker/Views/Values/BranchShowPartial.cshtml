@@ -1,0 +1,22 @@
+﻿@model Models.ProsessObjects.Branch
+@{
+
+}
+<div class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Branch Info
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>x</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Name:@Model.Name<br />
+                Adress:@Model.Adress<br />
+                BranchCode:@Model.BranchCode
+            </div>
+        </div>
+
+    </div>
+</div>

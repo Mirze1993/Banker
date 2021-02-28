@@ -17,22 +17,25 @@ namespace MicroORM
             query = DBContext.CreateQuary();
         }
 
+        
+
+
         public virtual (int, bool) Insert(T t, DbTransaction transaction = null)
         {
-            return Insert<T>(t, transaction);
+           return Insert<T>(t, transaction);
         }
-        public virtual (int,bool) Insert<M>(M t,DbTransaction transaction=null) where M : class, new()
+        public virtual (int, bool) Insert<M>(M t, DbTransaction transaction = null) where M : class, new()
         {
             string cmtext = query.Insert<M>();
 
             using (CommanderBase commander = DBContext.CreateCommander())
             {
-               
+
                 var p = commander.SetParametrs(t);
-                var (id,b) = commander.Scaller(cmtext, parameters:p,transaction:transaction);
-                
-                if (b&&id != null) return (Convert.ToInt32(id),b);
-                else return (0,b);
+                var (id, b) = commander.Scaller(cmtext, parameters: p, transaction: transaction);
+
+                if (b && id != null) return (Convert.ToInt32(id), b);
+                else return (0, b);
             }
         }
 
@@ -48,13 +51,13 @@ namespace MicroORM
             return commander.NonQuery(cmtext);
         }
 
-        public virtual (List<T>,bool) GetByColumName(string columName, object value)
+        public virtual (List<T>, bool) GetByColumName(string columName, object value, params string[] selectColumn)
         {
-            return GetByColumName<T>(columName, value);
+            return GetByColumName<T>(columName, value, selectColumn);
         }
-        public virtual (List<M>, bool) GetByColumName<M>(string columName, object value)where M:class,new()
+        public virtual (List<M>, bool) GetByColumName<M>(string columName, object value, params string[] selectColumn) where M : class, new()
         {
-            string cmtext = query.GetByColumName<M>(columName);
+            string cmtext = query.GetByColumName<M>(columName, selectColumn);
             using (CommanderBase commander = DBContext.CreateCommander())
             {
                 return commander.Reader<M>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value) });
@@ -62,20 +65,47 @@ namespace MicroORM
 
         }
 
-
-        public virtual (T,bool) GetByColumNameFist(string columName, object value)
+        public virtual (T, bool) GetByColumNameFist(string columName, object value, params string[] selectColumn)
         {
-            return GetByColumNameFist<T>(columName, value);
-        }        
-        public virtual (M, bool) GetByColumNameFist<M>(string columName, object value) where M:class,new()
+            return GetByColumNameFist<T>(columName, value,selectColumn);
+        }
+        public virtual (M, bool) GetByColumNameFist<M>(string columName, object value, params string[] selectColumn) where M : class, new()
         {
-            string cmtext = query.GetByColumName<M>(columName);
+            string cmtext = query.GetByColumName<M>(columName, selectColumn);
             using (CommanderBase commander = DBContext.CreateCommander())
             {
                 return commander.ReaderFist<M>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value) });
             }
         }
 
+
+        public virtual (List<T>, bool) GetWithCondition(string condition, params string[] selectColumn)
+        {
+            return GetWithCondition<T>(condition, selectColumn);
+        }
+        public virtual (List<M>, bool) GetWithCondition<M>(string condition, params string[] selectColumn) where M : class, new()
+        {
+            string cmtext = query.Condition<M>(condition, selectColumn);
+            using (CommanderBase commander = DBContext.CreateCommander())
+            {
+                return commander.Reader<M>(cmtext);
+            }
+
+        }
+
+        public virtual (T, bool) GetWithConditionFist(string condition, params string[] selectColumn)
+        {
+            return GetWithConditionFist<T>(condition, selectColumn);
+        }
+        public virtual (M, bool) GetWithConditionFist<M>(string condition, params string[] selectColumn) where M : class, new()
+        {
+            string cmtext = query.Condition<M>(condition, selectColumn);
+            using (CommanderBase commander = DBContext.CreateCommander())
+            {
+                return commander.ReaderFist<M>(cmtext);
+            }
+
+        }
 
         public virtual (List<T>, bool) GetAll(params string[] column)
         {
@@ -105,9 +135,9 @@ namespace MicroORM
         {
             return Update<T>(columns, values, id);
         }
-        public virtual bool Update<M>(string[] columns,object[] values,  int id) where M : class, new()
+        public virtual bool Update<M>(string[] columns, object[] values, int id) where M : class, new()
         {
-            string cmtext = query.Update<M>(id.ToString(),columns);
+            string cmtext = query.Update<M>(id.ToString(), columns);
             var p = new List<DbParameter>();
             using (CommanderBase commander = DBContext.CreateCommander())
             {

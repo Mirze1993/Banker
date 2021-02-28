@@ -1,0 +1,21 @@
+﻿@model Models.DBModel.AppUsers
+@{
+   
+}
+<div class="modal fade"  >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                User Info
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>x</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Name:@Model.Name<br />
+                Email:@Model.Email
+            </div>
+        </div>
+
+    </div>
+</div>

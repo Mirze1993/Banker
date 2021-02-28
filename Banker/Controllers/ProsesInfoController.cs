@@ -1,5 +1,6 @@
 ﻿using Banker.Repository;
 using Banker.UIModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -17,26 +18,23 @@ namespace Banker.Controllers
 
         Pos_Ins_UserRepository rep { get; }
 
-        public IActionResult Info()
-        {
-            int userId = 0;
-            Int32.TryParse(User.Claims.First(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value, out userId);
+       
 
+        public IActionResult AssingeInfo()
+        {
             var roles=User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Role).Select(x => x.Value).ToList();
             var model = new UIProsInfo();
 
-            model.AssingePosision= rep.GetPosInsUser(roles);
-            model.AssingeMe = rep.GetByColumName("UserID", userId).Item1;
+            var list = rep.GetPosInsUser(roles,getUserId());
+            model.AssingePosision= list.Where(x=>x.UserId==0).ToList();
+            model.AssingeMe = list.Where(x => x.UserId == getUserId()).ToList();
             return View(model);
         }
 
         public IActionResult Assinge(int id)
         {
-            int userId = 0;
-            Int32.TryParse(User.Claims.First(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value, out userId);
-
-            string[] clms = { "Role", "UserId" };
-            object[] vals = { "", userId };
+            string[] clms = {"UserId" };
+            object[] vals = { getUserId() };
             var b=rep.Update(clms, vals,id);
             var (p, bb) = rep.GetByColumNameFist("Id", id);
             return RedirectToAction(p.Step, p.PosesName,new {id=p.ProsessId});
@@ -53,6 +51,21 @@ namespace Banker.Controllers
             if (string.IsNullOrEmpty(model.ProsesName)) return View("ProsessReport",model);
             model.Response=rep.GetProsess(model);
             return View("ProsessReport", model);
+        }
+        [Authorize]
+        public IActionResult MyProsess()
+        {            
+            var (list,b)=rep.GetByColumName("UserId", getUserId());
+            if (!b) RedirectToAction("Index", "Home");
+            var t = list;
+            return View(list);
+        }
+
+        int getUserId()
+        {
+            int userId = 0;
+            Int32.TryParse(User.Claims.First(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value, out userId);
+            return userId;
         }
     }
 }

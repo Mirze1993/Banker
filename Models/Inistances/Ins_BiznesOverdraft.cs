@@ -19,10 +19,6 @@ namespace Models.Inistances
         public string DovruyelerJson { get; set; }
         public string  FileNames { get; set; }
 
-
-        
-        [DbMaping(DbMap.noMaping)]
-        public Branch Branch { get; set; }
         [DbMaping(DbMap.noMaping)]
         public List<Ins_BiznesOverdraft_DovrueList> Dovruyeler;
         public Ins_BiznesOverdraft()

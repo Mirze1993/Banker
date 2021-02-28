@@ -1,0 +1,74 @@
+﻿@model List<Pos_Ins_User>
+@{
+    ViewData["Title"] = "MyProsess";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section CSS{
+    <link href="~/tmpl/dist/css/select2-bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/tmpl/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="~/tmpl/dist/css/datatable/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/tmpl/dist/css/datatable/responsive.bootstrap4.min.css" rel="stylesheet" />
+}
+
+<div class="container-fluid">
+
+    <div class="card card-success">
+        <div class="card-header">
+            Prosess
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="prosess" class="table table-striped table-valign-middle">
+                <thead>
+                    <tr>
+                        <th>ProsesName</th>
+                        <th>InsName</th>
+                        <th>Active</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any()) 
+                    { 
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a target="_blank" asp-controller="@item.PosesName" asp-action="Info" asp-route-id="@item.ProsessId">@item.PosesName</a>
+
+                                </td>
+                                <td>@item.InsName</td>
+                                <td>@item.Active</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section Script{
+    <script src="~/tmpl/dist/js/select2.full.min.js"></script>
+    <script src="~/tmpl/dist/js/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/tmpl/dist/js/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="~/tmpl/dist/js/datatables/dataTables.responsive.min.js"></script>
+    <script src="~/tmpl/dist/js/datatables/responsive.bootstrap4.min.js"></script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            });
+            $("#prosess").DataTable({
+                "responsive": true,
+                "autoWidth": false,
+            });
+        })
+    </script>
+}

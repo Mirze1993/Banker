@@ -54,11 +54,13 @@ namespace Banker.Controllers
             Repository.Insert(new Pos_Ins_User
             {
                 PosesName = "BiznesOverdraft",
+                InsName = "BiznesOverdraft/",
+                Role = "Kad",
                 ProsessId = id,
                 Step = "Step1",
                 UserId = getUserId(),
-                Active=true
-            });
+                Active = true
+            }) ;
             #endregion
             return Step1(id);
         }
@@ -146,10 +148,12 @@ namespace Banker.Controllers
         [Authorize]
         public IActionResult Info(int id)
         {
+            aa++;
+            ViewBag.aa = aa;
             var model = Repository.GetById(id);
             return View(model);
         }
-
+        public static int aa=1;
 
         [HttpPost]
         public IActionResult Stop(int id)

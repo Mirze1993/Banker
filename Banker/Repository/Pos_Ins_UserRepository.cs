@@ -10,11 +10,13 @@ namespace Banker.Repository
 {
     public class Pos_Ins_UserRepository : CRUD<Pos_Ins_User>
     {
-        public List<Pos_Ins_User> GetPosInsUser(List<string> roles)
+        public List<Pos_Ins_User> GetPosInsUser(List<string> roles,int userId)
         {
             var prList = new List<System.Data.Common.DbParameter>();
+            
             using (var commander = DBContext.CreateCommander())
             {
+                prList.Add(commander.SetParametr("UserId", userId));
                 for (int i = 0; i < roles.Count; i++)
                 {
                     prList.Add(commander.SetParametr("Role" + i.ToString(), roles[i]));
@@ -28,6 +30,7 @@ namespace Banker.Repository
 
         public List<Ins_Base> GetProsess(UIModel.UIReprotProsess uIReprot)
         {
+          
             var prList = new List<System.Data.Common.DbParameter>();
 
             using (var commander = DBContext.CreateCommander())

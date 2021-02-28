@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="~/tmpl/dist/css/adminlte.min.css">
     @RenderSection("CSS", required: false)
 </head>
-<body class="hold-transition sidebar-mini sidebar-collapse">
+<body class="hold-transition sidebar-mini  sidebar-collapse">
     <div class="wrapper">
 
         <!-- Navbar -->
@@ -52,7 +52,7 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     <li class="nav-item">
-                        <a class="nav-link" asp-action="Info" asp-controller="ProsesInfo">
+                        <a class="nav-link" asp-action="AssingeInfo" asp-controller="ProsesInfo">
                             <i class="far fa-bell"></i>
                             <span class="badge badge-danger navbar-badge">1</span>
                         </a>
@@ -127,7 +127,7 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="#" class="nav-link">
+                                    <a asp-controller="ProsesInfo" asp-action="MyProsess" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>My Prosess</p>
                                     </a>

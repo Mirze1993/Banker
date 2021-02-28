@@ -3,9 +3,7 @@
     ViewData["Title"] = "Info";
     Layout = "~/Views/Shared/_ProsessLayout.cshtml";
 }
-
-<h1>Info</h1>
-
+<div id="PlaceHolderHere"></div>
 <div class="container-fluid">
     <div class="card card-primary">
         <div class="card-header">
@@ -21,15 +19,122 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in typeof(Ins_BiznesOverdraft).GetProperties())
-                {
                 <tr>
-                    <td>@item.Name</td>
-                    <td>@item.GetValue(Model)</td>
+                    <td>Amount</td>
+                    <td>@Model?.Amount</td>
                 </tr>
-                }
+                <tr>
+                    <td>Cif</td>
+                    <td>@Model?.Cif</td>
+                </tr>
+                <tr>
+                    <td>EndDate</td>
+                    <td>@Model?.EndDate</td>
+                </tr>
+                <tr>
+                    <td>StartDate</td>
+                    <td>@Model?.StartDate</td>
+                </tr>
+                <tr>
+                    <td>Log</td>
+                    <td>@Model?.Log</td>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td>@Model?.Name</td>
+                </tr>
+                <tr>
+                    <td>Voen</td>
+                    <td>@Model?.Voen</td>
+                </tr>
+                <tr>
+                    <td>Dovruyeler</td>
+                    <td onclick = "GFG_FUN()" >
+                        <table id="table" align="center" border="1px">
+                        </table>@Model?.DovruyelerJson
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td>Branch</td>
+                    <td>
+                        <button type="button" class="btn btn-link" data-toggle="ajax-modal" data-url="/Values/GetBranchInfo/@Model?.BranchId">Branch</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Aylar</td>
+                    <td>@Model?.Aylar</td>
+                </tr>
+                <tr>
+                    <td>Initiator</td>
+                    <td>
+                        <button type="button" class="btn btn-link" data-toggle="ajax-modal" data-url="/Values/GetUserInfo/@Model?.InitiatorId">Initiator</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Responsible</td>
+                    <td>
+                        <button type="button" class="btn btn-link" data-toggle="ajax-modal" data-url="/Values/GetUserInfo/@Model?.ResponsibleId">Responsible</button>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
+    @ViewBag.aa
+</div>
 
- </div>
+
+
+@section Script{
+    <script src="~/tmpl/customer/js_Modal.js"></script>
+    <script>
+    function GFG_FUN() {
+        var cols = [];
+        var list = jQuery.parseJSON(@Model.DovruyelerJson);
+        for (var i = 0; i < list.length; i++) {
+            for (var k in list[i]) {
+                if (cols.indexOf(k) === -1) {
+
+                    // Push all keys to the array
+                    cols.push(k);
+                }
+            }
+        }
+
+        // Create a table element
+        var table = document.createElement("table");
+
+        // Create table row tr element of a table
+        var tr = table.insertRow(-1);
+
+        for (var i = 0; i < cols.length; i++) {
+
+            // Create the table header th element
+            var theader = document.createElement("th");
+            theader.innerHTML = cols[i];
+
+            // Append columnName to the table row
+            tr.appendChild(theader);
+        }
+
+        // Adding the data to the table
+        for (var i = 0; i < list.length; i++) {
+
+            // Create a new row
+            trow = table.insertRow(-1);
+            for (var j = 0; j < cols.length; j++) {
+                var cell = trow.insertCell(-1);
+
+                // Inserting the cell at particular place
+                cell.innerHTML = list[i][cols[j]];
+            }
+        }
+
+        // Add the newely created table containing json data
+        var el = document.getElementById("table");
+        el.innerHTML = "";
+        el.appendChild(table);
+    }
+    </script>
+  
+}

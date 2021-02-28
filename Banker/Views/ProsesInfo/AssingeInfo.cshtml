@@ -15,7 +15,7 @@
                 @for (int i = 0; i < Model.AssingePosision.Count; i++)
                 {
                     <div class="row">
-                        <a asp-controller="ProsesInfo" asp-action="Assinge" asp-route-id="@Model.AssingePosision[i].Id">@Model.AssingePosision[i].PosesName</a>
+                        <a asp-controller="ProsesInfo" asp-action="Assinge" asp-route-id="@Model.AssingePosision[i].Id">@Model.AssingePosision[i].InsName</a>
                     </div>
                 }
             }
@@ -31,7 +31,7 @@
                 @for (int i = 0; i < Model.AssingeMe.Count; i++)
                 {
                     <div class="row">
-                        <a asp-controller="@Model.AssingeMe[i].PosesName" asp-action="@Model.AssingeMe[i].Step" asp-route-id="@Model.AssingeMe[i].ProsessId">@Model.AssingeMe[i].PosesName</a>
+                        <a asp-controller="@Model.AssingeMe[i].PosesName" asp-action="@Model.AssingeMe[i].Step" asp-route-id="@Model.AssingeMe[i].ProsessId">@Model.AssingeMe[i].InsName</a>
                     </div>
                 }
             }

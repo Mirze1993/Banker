@@ -131,14 +131,13 @@ namespace MicroORM
         {
             List<T> list = new List<T>();
             if (r == null) return list;
-
+            var fieldNames = Enumerable.Range(0, r.FieldCount).Select(i => r.GetName(i)).ToArray();
             while (r.Read())
             {
-               // var fieldNames = Enumerable.Range(0, r.FieldCount).Select(i => r.GetName(i)).ToArray();
                 T t = new T();
                 foreach (var item in typeof(T).GetProperties())
                 {
-                    //if (!fieldNames.Contains(item.Name)) continue;
+                    if (!fieldNames.Contains(item.Name)) continue;
                     var attribute = (DbMapingAttribute)Attribute.GetCustomAttribute(item, typeof(DbMapingAttribute));
                     if (attribute != null) if (attribute.Map == DbMap.noMaping) continue;
                     try
